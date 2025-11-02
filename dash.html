@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>रिअल इस्टेट विक्री डॅशबोर्ड</title>
     
-    <!-- PapaParse for CSV parsing, Chart.js, and Font Awesome Icons from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -28,9 +27,7 @@
             --font-family: 'Poppins', sans-serif;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -40,12 +37,7 @@
             overflow-x: hidden;
         }
 
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-            min-height: 100vh;
-        }
+        .dashboard-container { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
         
         .header {
             background: linear-gradient(90deg, var(--primary-color), var(--primary-color-dark));
@@ -66,17 +58,8 @@
             gap: 12px;
         }
         
-        .main-content {
-            padding: 2rem;
-            overflow-y: auto;
-        }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
+        .main-content { padding: 2rem; overflow-y: auto; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 
         .kpi-card {
             background: var(--card-bg);
@@ -91,11 +74,7 @@
             border-left: 6px solid transparent;
         }
         
-        .kpi-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-        
+        .kpi-card:hover { transform: translateY(-6px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
         .kpi-card .icon { font-size: 2.5rem; }
         .kpi-card .info .value { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; line-height: 1.2; }
         .kpi-card .info .label { font-size: 0.9rem; color: var(--secondary-text); }
@@ -106,16 +85,10 @@
         .kpi-collected { border-color: var(--green); color: var(--green); }
         .kpi-pending { border-color: var(--red); color: var(--red); }
         
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
+        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
         
-        @media (min-width: 992px) {
-            .charts-grid { grid-template-columns: 2fr 1fr; }
-        }
+        @media (min-width: 992px) { .charts-grid { grid-template-columns: 2fr 1fr; } }
+        @media (min-width: 1200px) { .charts-grid { grid-template-columns: 2fr 1fr 1fr; } }
 
         .chart-container, .building-view-container {
             background: var(--card-bg);
@@ -126,58 +99,16 @@
             flex-direction: column;
             min-height: 420px;
         }
-        .chart-container h3, .building-view-container h3 { 
-            margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 600;
-        }
+        .chart-container h3, .building-view-container h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 600; }
         .chart-wrapper { position: relative; flex-grow: 1; }
         
-        /* New Building View Styles */
-        #building-view {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 10px;
-            flex-grow: 1;
-            padding: 10px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-        }
-        .flat-block {
-            aspect-ratio: 1 / 1;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-        }
-        .flat-block:hover {
-            transform: scale(1.1);
-            z-index: 10;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        }
+        #building-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; flex-grow: 1; padding: 10px; background-color: #f9fafb; border-radius: 8px; }
+        .flat-block { aspect-ratio: 1 / 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; }
+        .flat-block:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .flat-block.status-sold { background-color: var(--green); }
         .flat-block.status-available { background-color: var(--orange); }
-        .flat-block .tooltip {
-            visibility: hidden; opacity: 0;
-            position: absolute;
-            bottom: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 12px;
-            background-color: #333;
-            color: white;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            transition: opacity 0.2s;
-            pointer-events: none;
-        }
+        .flat-block .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); padding: 8px 12px; background-color: #333; color: white; border-radius: 6px; font-size: 0.8rem; white-space: nowrap; transition: opacity 0.2s; pointer-events: none; }
         .flat-block:hover .tooltip { visibility: visible; opacity: 1; }
-
 
         .table-container { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); }
         .table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
@@ -197,7 +128,6 @@
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* New Modal Styles */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1002; padding: 1rem; }
         .modal-content { background: white; border-radius: 12px; padding: 2rem; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; animation: slideDown 0.3s ease-out; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
@@ -265,6 +195,7 @@
                 </div>
             </section>
 
+            <!-- *** LAYOUT UPDATED TO INCLUDE THE NEW CHART *** -->
             <section class="charts-grid">
                 <div class="building-view-container">
                     <h3>बिल्डिंग स्टेटस व्ह्यू</h3>
@@ -273,6 +204,11 @@
                 <div class="chart-container">
                     <h3>फ्लॅट स्थिती</h3>
                     <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
+                </div>
+                <!-- *** NEW CHART CONTAINER ADDED HERE *** -->
+                <div class="chart-container">
+                    <h3>रक्कम स्थिती (विक्री झालेल्या फ्लॅट्सची)</h3>
+                    <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
                 </div>
             </section>
 
@@ -291,7 +227,6 @@
         </main>
     </div>
 
-    <!-- New Modal Structure -->
     <div id="details-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -299,9 +234,7 @@
                 <button id="modal-close-btn" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <ul id="modal-list-content" class="modal-list">
-                    <!-- Dynamic content goes here -->
-                </ul>
+                <ul id="modal-list-content" class="modal-list"></ul>
             </div>
         </div>
     </div>
@@ -326,7 +259,6 @@
             const modalCloseBtn = document.getElementById('modal-close-btn');
 
             const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            
             const formatToCrores = (num) => {
                 const number = Number(num);
                 if (isNaN(number)) return '₹0';
@@ -351,7 +283,6 @@
                 showLoading(true);
                 try {
                     const [flats, payments] = await Promise.all([fetchData(FLATS_CSV_URL), fetchData(PAYMENTS_CSV_URL)]);
-                    
                     const cleanNumber = (val) => Number(String(val).replace(/,/g, '')) || 0;
 
                     allFlatsData = flats.map(flat => {
@@ -366,10 +297,9 @@
                     });
                     
                     renderDashboard(allFlatsData);
-
                 } catch (error) {
                     console.error('Data fetching error:', error);
-                    loadingOverlay.innerHTML = `<span>Error: ${error.message}<br>Please check your Google Sheet 'Publish to web' links.</span>`;
+                    loadingOverlay.innerHTML = `<span>Error: ${error.message}<br>Please check links.</span>`;
                 } finally {
                     setTimeout(() => showLoading(false), 300);
                 }
@@ -395,23 +325,21 @@
                 document.getElementById('kpi-total-pending').textContent = formatToCrores(totalPending);
             }
 
-            // *** CHART RENDERING LOGIC IS UPDATED HERE ***
             function renderCharts(data) {
-                if (chartInstances.status) {
-                    chartInstances.status.destroy();
-                }
+                renderFlatStatusChart(data);
+                renderPaymentStatusChart(data);
+            }
+
+            function renderFlatStatusChart(data) {
+                if (chartInstances.status) chartInstances.status.destroy();
                 
                 const statusCounts = data.reduce((acc, f) => {
-                    if(f['स्थिती']) {
-                       acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
-                    }
+                    if(f['स्थिती']) acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
                     return acc;
                 }, {});
                 
                 const colorMap = { 'विक्री झाली': '#2ecc71', 'उपलब्ध': '#f39c12' };
-                const chartLabels = [];
-                const chartData = [];
-                const chartColors = [];
+                const chartLabels = [], chartData = [], chartColors = [];
 
                 for (const status in statusCounts) {
                     if (statusCounts[status] > 0) {
@@ -421,60 +349,76 @@
                     }
                 }
                 
-                // If there's no data, don't render the chart
                 if (chartData.length === 0) return;
 
                 const centerTextPlugin = {
                     id: 'centerText',
                     beforeDraw: (chart) => {
-                        if (chart.config.type !== 'doughnut' || chart.data.datasets[0].data.length === 0) return;
-                        const ctx = chart.ctx;
-                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        
+                        const { ctx, width, height } = chart;
                         ctx.save();
-                        const x = chart.getDatasetMeta(0).data[0].x;
-                        const y = chart.getDatasetMeta(0).data[0].y;
-                        
+                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
-                        
-                        // Main number
-                        ctx.font = 'bold 32px ' + getComputedStyle(document.body).getPropertyValue('--font-family');
+                        ctx.font = `bold 32px ${getComputedStyle(document.body).fontFamily}`;
                         ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary-text');
-                        ctx.fillText(total, x, y - 10);
-                        
-                        // Label
-                        ctx.font = '500 14px ' + getComputedStyle(document.body).getPropertyValue('--font-family');
+                        ctx.fillText(total, width / 2, height / 2 - 10);
+                        ctx.font = `500 14px ${getComputedStyle(document.body).fontFamily}`;
                         ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text');
-                        ctx.fillText('एकूण फ्लॅट्स', x, y + 15);
-                        
+                        ctx.fillText('एकूण फ्लॅट्स', width / 2, height / 2 + 15);
                         ctx.restore();
                     }
                 };
 
                 chartInstances.status = new Chart('status-chart', {
                     type: 'doughnut', 
-                    data: { 
-                        labels: chartLabels, 
-                        datasets: [{ 
-                            data: chartData, 
-                            backgroundColor: chartColors,
+                    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] }, 
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'top' } } },
+                    plugins: [centerTextPlugin]
+                });
+            }
+
+            // *** NEW FUNCTION TO RENDER THE PAYMENT STATUS CHART ***
+            function renderPaymentStatusChart(data) {
+                if (chartInstances.payment) chartInstances.payment.destroy();
+
+                const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
+                const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
+                const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
+                
+                // Only render the chart if there are amounts to show
+                if (totalCollected <= 0 && totalPending <= 0) return;
+
+                chartInstances.payment = new Chart('payment-status-chart', {
+                    type: 'pie',
+                    data: {
+                        labels: ['एकूण जमा रक्कम', 'एकूण शिल्लक रक्कम'],
+                        datasets: [{
+                            data: [totalCollected, totalPending],
+                            backgroundColor: [ '#2ecc71', '#e74c3c' ],
                             borderColor: '#ffffff',
                             borderWidth: 4,
                             hoverOffset: 8
-                        }] 
-                    }, 
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        cutout: '70%',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                position: 'top',
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed !== null) {
+                                            label += formatToCrores(context.parsed);
+                                        }
+                                        return label;
+                                    }
+                                }
                             }
                         }
-                    },
-                    plugins: [centerTextPlugin]
+                    }
                 });
             }
 
@@ -499,7 +443,7 @@
                 });
             }
 
-            function renderTable(data, filter = 'all') {
+            function renderTable(data) {
                 const headers = ['फ्लॅट आयडी', 'स्थिती', 'खरेदीदाराचे नाव', 'अंतिम किंमत', 'एकूण भरलेली रक्कम', 'शिल्लक रक्कम'];
                 if (tableHead.innerHTML === '') {
                     tableHead.innerHTML = `<tr>${headers.map(h => `<th data-key="${h}">${h} <span class="sort-indicator"></span></th>`).join('')}</tr>`;
@@ -508,14 +452,12 @@
                 let filteredData = data;
                 const searchTerm = tableSearchInput.value.toLowerCase();
                 if (searchTerm) {
-                    filteredData = filteredData.filter(flat => 
-                        Object.values(flat).some(val => String(val).toLowerCase().includes(searchTerm))
-                    );
+                    filteredData = filteredData.filter(flat => Object.values(flat).some(val => String(val).toLowerCase().includes(searchTerm)));
                 }
 
                 const sortedData = [...filteredData].sort((a, b) => {
-                    const valA = a[currentSort.key]; const valB = b[currentSort.key];
-                    if (typeof valA === 'number' && typeof valB === 'number') { return currentSort.asc ? valA - valB : valB - valA; }
+                    const valA = a[currentSort.key], valB = b[currentSort.key];
+                    if (typeof valA === 'number' && typeof valB === 'number') return currentSort.asc ? valA - valB : valB - valA;
                     return currentSort.asc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
                 });
                 
@@ -545,20 +487,14 @@
                         <span>${formatToCrores(flat['शिल्लक रक्कम'])}</span>
                     </li>
                 `).join('');
-                if (data.length === 0) {
-                    modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
-                }
+                if (data.length === 0) modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
                 modal.style.display = 'flex';
             }
 
-            function hideModal() {
-                modal.style.display = 'none';
-            }
+            function hideModal() { modal.style.display = 'none'; }
 
-            // --- Event Listeners ---
             kpiCards.forEach(card => card.addEventListener('click', () => {
-                const filter = card.dataset.filter;
-                const title = card.dataset.title;
+                const filter = card.dataset.filter, title = card.dataset.title;
                 let filteredData = allFlatsData;
 
                 if (filter === 'sold') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
@@ -570,12 +506,8 @@
             }));
 
             modalCloseBtn.addEventListener('click', hideModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) hideModal();
-            });
-
+            modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
             tableSearchInput.addEventListener('input', () => renderTable(allFlatsData));
-            
             tableHead.addEventListener('click', e => {
                 const key = e.target.closest('th')?.dataset.key;
                 if (!key) return;
