@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>रिअल इस्टेट विक्री डॅशबोर्ड</title>
+    <title>TODKAR & WAJE Construction - विक्री डॅशबोर्ड</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
         :root {
-            --bg-color: #f4f7fe;
+            --bg-color: #f8f9fa;
             --card-bg: #ffffff;
-            --primary-text: #2c3e50;
-            --secondary-text: #7f8c8d;
-            --border-color: #e8ecf1;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --primary-color: #3498db;
-            --primary-color-dark: #2980b9;
-            --green: #2ecc71;
-            --orange: #f39c12;
-            --red: #e74c3c;
+            --primary-text: #343a40;
+            --secondary-text: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+            --primary-color: #4A90E2; /* A modern, professional blue */
+            --primary-color-dark: #357ABD;
+            --green: #28a745;
+            --orange: #fd7e14;
+            --red: #dc3545;
             --font-family: 'Poppins', sans-serif;
         }
 
@@ -35,80 +36,93 @@
             background-color: var(--bg-color);
             color: var(--primary-text);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .dashboard-container { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
         
         .header {
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-color-dark));
-            padding: 0 2rem;
+            background: var(--card-bg);
+            padding: 0 1rem;
             height: 70px;
             display: flex;
             align-items: center;
-            box-shadow: var(--shadow);
+            border-bottom: 1px solid var(--border-color);
             z-index: 100;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            color: white;
+            color: var(--primary-color);
             display: flex;
             align-items: center;
             gap: 12px;
         }
         
-        .main-content { padding: 2rem; overflow-y: auto; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        @media (min-width: 768px) {
+            .header { padding: 0 2rem; }
+            .header h1 { font-size: 1.75rem; }
+        }
+
+        .main-content { padding: 1rem; }
+        @media (min-width: 768px) { .main-content { padding: 2rem; } }
+
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        @media (min-width: 992px) { .kpi-grid { grid-template-columns: repeat(5, 1fr); } }
+
 
         .kpi-card {
             background: var(--card-bg);
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 12px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 6px solid transparent;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-bottom: 4px solid transparent;
         }
         
-        .kpi-card:hover { transform: translateY(-6px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        .kpi-card .icon { font-size: 2.5rem; }
-        .kpi-card .info .value { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; line-height: 1.2; }
-        .kpi-card .info .label { font-size: 0.9rem; color: var(--secondary-text); }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .kpi-card .icon { font-size: 2rem; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .kpi-card .info .value { font-size: clamp(1.25rem, 4vw, 1.75rem); font-weight: 700; line-height: 1.2; }
+        .kpi-card .info .label { font-size: 0.8rem; color: var(--secondary-text); }
 
-        .kpi-total { border-color: var(--primary-color); color: var(--primary-color); }
-        .kpi-sold { border-color: var(--green); color: var(--green); }
-        .kpi-available { border-color: var(--orange); color: var(--orange); }
-        .kpi-collected { border-color: var(--green); color: var(--green); }
-        .kpi-pending { border-color: var(--red); color: var(--red); }
+        .kpi-total { border-color: var(--primary-color); } .kpi-total .icon { background-color: var(--primary-color); }
+        .kpi-sold { border-color: var(--green); } .kpi-sold .icon { background-color: var(--green); }
+        .kpi-available { border-color: var(--orange); } .kpi-available .icon { background-color: var(--orange); }
+        .kpi-collected { border-color: var(--green); } .kpi-collected .icon { background-color: var(--green); }
+        .kpi-pending { border-color: var(--red); } .kpi-pending .icon { background-color: var(--red); }
         
-        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .content-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (min-width: 1200px) { .content-grid { grid-template-columns: 2fr 1.5fr; } }
         
-        @media (min-width: 992px) { .charts-grid { grid-template-columns: 2fr 1fr; } }
-        @media (min-width: 1200px) { .charts-grid { grid-template-columns: 2fr 1fr 1fr; } }
+        .left-column { display: flex; flex-direction: column; gap: 2rem; }
+        .right-column { display: flex; flex-direction: column; gap: 2rem; }
 
-        .chart-container, .building-view-container {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            min-height: 420px;
+        .charts-container { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 768px) { .charts-container { grid-template-columns: 1fr 1fr; } }
+        
+        .chart-container, .building-view-container, .available-flats-container {
+            background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow);
+            display: flex; flex-direction: column; min-height: 420px;
         }
-        .chart-container h3, .building-view-container h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 600; }
+        .chart-container h3, .building-view-container h3, .available-flats-container h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: 600; }
         .chart-wrapper { position: relative; flex-grow: 1; }
         
-        #building-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; flex-grow: 1; padding: 10px; background-color: #f9fafb; border-radius: 8px; }
-        .flat-block { aspect-ratio: 1 / 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; }
+        #building-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 8px; flex-grow: 1; padding: 10px; background-color: #f8f9fa; border-radius: 8px; }
+        .flat-block { aspect-ratio: 1 / 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; position: relative; }
         .flat-block:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         .flat-block.status-sold { background-color: var(--green); }
         .flat-block.status-available { background-color: var(--orange); }
-        .flat-block .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); padding: 8px 12px; background-color: #333; color: white; border-radius: 6px; font-size: 0.8rem; white-space: nowrap; transition: opacity 0.2s; pointer-events: none; }
+        .flat-block .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); padding: 8px 12px; background-color: #343a40; color: white; border-radius: 6px; font-size: 0.8rem; white-space: nowrap; transition: opacity 0.2s; pointer-events: none; }
         .flat-block:hover .tooltip { visibility: visible; opacity: 1; }
+
+        .available-flats-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+        .available-flats-list li { background-color: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-weight: 500; }
 
         .table-container { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); }
         .table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
@@ -117,15 +131,15 @@
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-        thead th { background-color: #f7f7f7; font-weight: 600; cursor: pointer; user-select: none; position: sticky; top: 0; }
-        .sort-indicator { display: inline-block; margin-left: 5px; opacity: 0.6; }
-        tbody tr:hover { background-color: #f5f5f5; }
+        thead th { background-color: #f8f9fa; font-weight: 600; cursor: pointer; user-select: none; position: sticky; top: 0; }
+        tbody tr:nth-child(even) { background-color: #f8f9fa; }
+        tbody tr:hover { background-color: #e9ecef; }
         .status-badge { padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; display: inline-block; }
         .status-विक्री-झाली { background-color: var(--green); }
         .status-उपलब्ध { background-color: var(--orange); }
 
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; justify-content: center; align-items: center; z-index: 1001; font-size: 1.5rem; font-weight: 500; flex-direction: column; gap: 1rem; }
-        .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); display: flex; justify-content: center; align-items: center; z-index: 1001; flex-direction: column; gap: 1rem; }
+        .loader { border: 5px solid #e9ecef; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1002; padding: 1rem; }
@@ -135,9 +149,8 @@
         .modal-close { font-size: 1.8rem; color: var(--secondary-text); cursor: pointer; background: none; border: none; }
         .modal-body { overflow-y: auto; }
         .modal-list { list-style: none; padding: 0; margin: 0; }
-        .modal-list li { display: flex; justify-content: space-between; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
+        .modal-list li { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; gap: 1rem; }
         .modal-list li:last-child { border-bottom: none; }
-        .modal-list li span { flex-basis: 25%; text-align: left; }
         .modal-list li span:first-child { font-weight: 600; }
 
         @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -148,7 +161,7 @@
 
     <div class="dashboard-container">
         <header class="header">
-            <h1><i class="fa-solid fa-city"></i> विक्री डॅशबोर्ड</h1>
+            <h1><i class="fa-solid fa-hard-hat"></i> TODKAR & WAJE Construction</h1>
         </header>
 
         <main class="main-content">
@@ -160,55 +173,48 @@
             <section class="kpi-grid">
                 <div class="kpi-card kpi-total" data-filter="all" data-title="एकूण सर्व फ्लॅट्स">
                     <div class="icon"><i class="fa-solid fa-building"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-flats">0</div>
-                        <div class="label">एकूण फ्लॅट्स</div>
-                    </div>
+                    <div class="info"><div class="value" id="kpi-total-flats">0</div><div class="label">एकूण फ्लॅट्स</div></div>
                 </div>
                 <div class="kpi-card kpi-sold" data-filter="sold" data-title="विक्री झालेले फ्लॅट्स">
                     <div class="icon"><i class="fa-solid fa-house-circle-check"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-sold-flats">0</div>
-                        <div class="label">विक्री झाली</div>
-                    </div>
+                    <div class="info"><div class="value" id="kpi-sold-flats">0</div><div class="label">विक्री झाली</div></div>
                 </div>
                 <div class="kpi-card kpi-available" data-filter="available" data-title="उपलब्ध फ्लॅट्स">
                     <div class="icon"><i class="fa-solid fa-house-circle-xmark"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-available-flats">0</div>
-                        <div class="label">उपलब्ध फ्लॅट्स</div>
-                    </div>
+                    <div class="info"><div class="value" id="kpi-available-flats">0</div><div class="label">उपलब्ध फ्लॅट्स</div></div>
                 </div>
                 <div class="kpi-card kpi-collected" data-filter="collected-positive" data-title="जमा रक्कम असलेले फ्लॅट्स">
                     <div class="icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-collected">₹0</div>
-                        <div class="label">एकूण जमा रक्कम</div>
-                    </div>
+                    <div class="info"><div class="value" id="kpi-total-collected">₹0</div><div class="label">एकूण जमा रक्कम</div></div>
                 </div>
                 <div class="kpi-card kpi-pending" data-filter="pending-positive" data-title="शिल्लक रक्कम असलेले फ्लॅट्स">
                      <div class="icon"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-pending">₹0</div>
-                        <div class="label">एकूण शिल्लक रक्कम</div>
-                    </div>
+                    <div class="info"><div class="value" id="kpi-total-pending">₹0</div><div class="label">एकूण शिल्लक रक्कम</div></div>
                 </div>
             </section>
 
-            <!-- *** LAYOUT UPDATED TO INCLUDE THE NEW CHART *** -->
-            <section class="charts-grid">
-                <div class="building-view-container">
-                    <h3>बिल्डिंग स्टेटस व्ह्यू</h3>
-                    <div id="building-view"></div>
+            <section class="content-grid">
+                <div class="left-column">
+                    <div class="building-view-container">
+                        <h3>बिल्डिंग स्टेटस व्ह्यू</h3>
+                        <div id="building-view"></div>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <h3>फ्लॅट स्थिती</h3>
-                    <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
-                </div>
-                <!-- *** NEW CHART CONTAINER ADDED HERE *** -->
-                <div class="chart-container">
-                    <h3>रक्कम स्थिती (विक्री झालेल्या फ्लॅट्सची)</h3>
-                    <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
+                <div class="right-column">
+                    <div class="charts-container">
+                        <div class="chart-container">
+                            <h3>फ्लॅट स्थिती</h3>
+                            <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>रक्कम स्थिती</h3>
+                            <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="available-flats-container">
+                        <h3>उपलब्ध फ्लॅट्स</h3>
+                        <ul id="available-flats-list" class="available-flats-list"></ul>
+                    </div>
                 </div>
             </section>
 
@@ -233,9 +239,7 @@
                 <h2 id="modal-title">तपशील</h2>
                 <button id="modal-close-btn" class="modal-close">&times;</button>
             </div>
-            <div class="modal-body">
-                <ul id="modal-list-content" class="modal-list"></ul>
-            </div>
+            <div class="modal-body"><ul id="modal-list-content" class="modal-list"></ul></div>
         </div>
     </div>
 
@@ -248,41 +252,40 @@
             let chartInstances = {};
             let currentSort = { key: 'फ्लॅट आयडी', asc: true };
 
-            const loadingOverlay = document.getElementById('loading');
-            const kpiCards = document.querySelectorAll('.kpi-card');
-            const tableSearchInput = document.getElementById('table-search');
-            const tableHead = document.getElementById('table-head');
-            const tableBody = document.getElementById('table-body');
-            const modal = document.getElementById('details-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalList = document.getElementById('modal-list-content');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const ui = {
+                loading: document.getElementById('loading'),
+                kpiCards: document.querySelectorAll('.kpi-card'),
+                tableSearch: document.getElementById('table-search'),
+                tableHead: document.getElementById('table-head'),
+                tableBody: document.getElementById('table-body'),
+                modal: document.getElementById('details-modal'),
+                modalTitle: document.getElementById('modal-title'),
+                modalList: document.getElementById('modal-list-content'),
+                modalCloseBtn: document.getElementById('modal-close-btn'),
+                availableFlatsList: document.getElementById('available-flats-list')
+            };
 
             const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
             const formatToCrores = (num) => {
                 const number = Number(num);
                 if (isNaN(number)) return '₹0';
-                if (number >= 10000000) return `₹${(number / 10000000).toFixed(2)} Cr`;
-                if (number >= 100000) return `₹${(number / 100000).toFixed(2)} L`;
+                if (Math.abs(number) >= 10000000) return `₹${(number / 10000000).toFixed(2)} Cr`;
+                if (Math.abs(number) >= 100000) return `₹${(number / 100000).toFixed(2)} L`;
                 return formatCurrency(number);
             };
 
-            const showLoading = (show) => { loadingOverlay.style.display = show ? 'flex' : 'none'; };
+            const showLoading = (show) => { ui.loading.style.display = show ? 'flex' : 'none'; };
 
             async function fetchData(url) {
-                return new Promise((resolve, reject) => {
-                    Papa.parse(url, {
-                        download: true, header: true, skipEmptyLines: true,
-                        complete: (results) => resolve(results.data),
-                        error: (error) => reject(error),
-                    });
-                });
+                return new Promise((resolve, reject) => Papa.parse(url, { download: true, header: true, skipEmptyLines: true, complete: resolve, error: reject }));
             }
             
-            async function fetchAndProcessData() {
+            async function init() {
                 showLoading(true);
                 try {
-                    const [flats, payments] = await Promise.all([fetchData(FLATS_CSV_URL), fetchData(PAYMENTS_CSV_URL)]);
+                    const [flatsRes, paymentsRes] = await Promise.all([fetchData(FLATS_CSV_URL), fetchData(PAYMENTS_CSV_URL)]);
+                    const flats = flatsRes.data;
+                    const payments = paymentsRes.data;
                     const cleanNumber = (val) => Number(String(val).replace(/,/g, '')) || 0;
 
                     allFlatsData = flats.map(flat => {
@@ -290,16 +293,14 @@
                         const totalPaid = flatPayments.reduce((sum, p) => sum + cleanNumber(p['रक्कम']), 0);
                         const finalPrice = cleanNumber(flat['अंतिम किंमत']) || cleanNumber(flat['किंमत']);
                         const remainingBalance = finalPrice - totalPaid;
-
-                        return {
-                            ...flat, 'अंतिम किंमत': finalPrice, 'एकूण भरलेली रक्कम': totalPaid, 'शिल्लक रक्कम': remainingBalance,
-                        };
+                        return { ...flat, 'अंतिम किंमत': finalPrice, 'एकूण भरलेली रक्कम': totalPaid, 'शिल्लक रक्कम': remainingBalance };
                     });
                     
                     renderDashboard(allFlatsData);
+                    setupEventListeners();
                 } catch (error) {
                     console.error('Data fetching error:', error);
-                    loadingOverlay.innerHTML = `<span>Error: ${error.message}<br>Please check links.</span>`;
+                    ui.loading.innerHTML = `<span>Error: ${error.message}<br>Please check links.</span>`;
                 } finally {
                     setTimeout(() => showLoading(false), 300);
                 }
@@ -309,7 +310,8 @@
                 renderKPIs(data);
                 renderCharts(data);
                 renderBuildingView(data);
-                renderTable(data); 
+                renderTable(data);
+                renderAvailableFlatsList(data);
             }
 
             function renderKPIs(data) {
@@ -317,7 +319,6 @@
                 const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
-
                 document.getElementById('kpi-total-flats').textContent = totalFlats;
                 document.getElementById('kpi-sold-flats').textContent = soldFlats.length;
                 document.getElementById('kpi-available-flats').textContent = totalFlats - soldFlats.length;
@@ -329,96 +330,56 @@
                 renderFlatStatusChart(data);
                 renderPaymentStatusChart(data);
             }
+            
+            Chart.register(ChartDataLabels);
 
-            function renderFlatStatusChart(data) {
-                if (chartInstances.status) chartInstances.status.destroy();
-                
-                const statusCounts = data.reduce((acc, f) => {
-                    if(f['स्थिती']) acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
-                    return acc;
-                }, {});
-                
-                const colorMap = { 'विक्री झाली': '#2ecc71', 'उपलब्ध': '#f39c12' };
-                const chartLabels = [], chartData = [], chartColors = [];
-
-                for (const status in statusCounts) {
-                    if (statusCounts[status] > 0) {
-                        chartLabels.push(status);
-                        chartData.push(statusCounts[status]);
-                        chartColors.push(colorMap[status] || '#bdc3c7');
-                    }
+            function createChart(canvasId, type, labels, data, colors, options = {}, plugins = []) {
+                if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+                if (data.length === 0 || data.every(d => d === 0)) {
+                    const canvas = document.getElementById(canvasId);
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#aaa';
+                    ctx.fillText('माहिती उपलब्ध नाही', canvas.width / 2, canvas.height / 2);
+                    return;
                 }
-                
-                if (chartData.length === 0) return;
-
-                const centerTextPlugin = {
-                    id: 'centerText',
-                    beforeDraw: (chart) => {
-                        const { ctx, width, height } = chart;
-                        ctx.save();
-                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.font = `bold 32px ${getComputedStyle(document.body).fontFamily}`;
-                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary-text');
-                        ctx.fillText(total, width / 2, height / 2 - 10);
-                        ctx.font = `500 14px ${getComputedStyle(document.body).fontFamily}`;
-                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text');
-                        ctx.fillText('एकूण फ्लॅट्स', width / 2, height / 2 + 15);
-                        ctx.restore();
-                    }
-                };
-
-                chartInstances.status = new Chart('status-chart', {
-                    type: 'doughnut', 
-                    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] }, 
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'top' } } },
-                    plugins: [centerTextPlugin]
+                chartInstances[canvasId] = new Chart(canvasId, {
+                    type,
+                    data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] },
+                    options,
+                    plugins
                 });
             }
 
-            // *** NEW FUNCTION TO RENDER THE PAYMENT STATUS CHART ***
-            function renderPaymentStatusChart(data) {
-                if (chartInstances.payment) chartInstances.payment.destroy();
+            function renderFlatStatusChart(data) {
+                const statusCounts = data.reduce((acc, f) => { if(f['स्थिती']) acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1; return acc; }, {});
+                const chartLabels = [], chartData = [], chartColors = [];
+                const colorMap = { 'विक्री झाली': 'var(--green)', 'उपलब्ध': 'var(--orange)' };
+                for (const status in statusCounts) {
+                    if (statusCounts[status] > 0) {
+                        chartLabels.push(status); chartData.push(statusCounts[status]); chartColors.push(colorMap[status]);
+                    }
+                }
+                createChart('status-chart', 'doughnut', chartLabels, chartData, chartColors, {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { legend: { display: false }, datalabels: {
+                        formatter: (value, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + '%'; return percentage; },
+                        color: '#fff', font: { weight: 'bold' }
+                    } }
+                });
+            }
 
+            function renderPaymentStatusChart(data) {
                 const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
-                
-                // Only render the chart if there are amounts to show
-                if (totalCollected <= 0 && totalPending <= 0) return;
-
-                chartInstances.payment = new Chart('payment-status-chart', {
-                    type: 'pie',
-                    data: {
-                        labels: ['एकूण जमा रक्कम', 'एकूण शिल्लक रक्कम'],
-                        datasets: [{
-                            data: [totalCollected, totalPending],
-                            backgroundColor: [ '#2ecc71', '#e74c3c' ],
-                            borderColor: '#ffffff',
-                            borderWidth: 4,
-                            hoverOffset: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) label += ': ';
-                                        if (context.parsed !== null) {
-                                            label += formatToCrores(context.parsed);
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                createChart('payment-status-chart', 'pie', ['जमा', 'शिल्लक'], [totalCollected, totalPending], ['var(--green)', 'var(--red)'], {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: {
+                        formatter: (value, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + '%'; return percentage; },
+                        color: '#fff', font: { weight: 'bold' }
+                    }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatToCrores(c.parsed)}` } } }
                 });
             }
 
@@ -426,97 +387,74 @@
                 const container = document.getElementById('building-view');
                 container.innerHTML = '';
                 const sortedData = [...data].sort((a,b) => String(a['फ्लॅट आयडी']).localeCompare(String(b['फ्लॅट आयडी']), undefined, {numeric: true}));
-
                 sortedData.forEach(flat => {
                     const block = document.createElement('div');
-                    block.className = 'flat-block';
-                    block.classList.add(flat['स्थिती'] === 'विक्री झाली' ? 'status-sold' : 'status-available');
+                    block.className = `flat-block ${flat['स्थिती'] === 'विक्री झाली' ? 'status-sold' : 'status-available'}`;
                     block.textContent = flat['फ्लॅट आयडी'];
-
-                    const tooltip = document.createElement('span');
-                    tooltip.className = 'tooltip';
-                    const buyer = flat['खरेदीदाराचे नाव'] || 'N/A';
-                    tooltip.textContent = `खरेदीदार: ${buyer} | किंमत: ${formatToCrores(flat['अंतिम किंमत'])}`;
-                    block.appendChild(tooltip);
-
+                    block.innerHTML += `<span class="tooltip">खरेदीदार: ${flat['खरेदीदाराचे नाव'] || '-'} | किंमत: ${formatToCrores(flat['अंतिम किंमत'])}</span>`;
                     container.appendChild(block);
                 });
             }
 
+            function renderAvailableFlatsList(data) {
+                const available = data.filter(f => f['स्थिती'] === 'उपलब्ध').sort((a,b) => String(a['फ्लॅट आयडी']).localeCompare(String(b['फ्लॅट आयडी']), undefined, {numeric: true}));
+                if (available.length > 0) {
+                    ui.availableFlatsList.innerHTML = available.map(f => `<li>${f['फ्लॅट आयडी']}</li>`).join('');
+                } else {
+                    ui.availableFlatsList.innerHTML = '<li>सर्व फ्लॅट्सची विक्री झाली आहे.</li>';
+                }
+            }
+
             function renderTable(data) {
                 const headers = ['फ्लॅट आयडी', 'स्थिती', 'खरेदीदाराचे नाव', 'अंतिम किंमत', 'एकूण भरलेली रक्कम', 'शिल्लक रक्कम'];
-                if (tableHead.innerHTML === '') {
-                    tableHead.innerHTML = `<tr>${headers.map(h => `<th data-key="${h}">${h} <span class="sort-indicator"></span></th>`).join('')}</tr>`;
-                }
-
-                let filteredData = data;
-                const searchTerm = tableSearchInput.value.toLowerCase();
-                if (searchTerm) {
-                    filteredData = filteredData.filter(flat => Object.values(flat).some(val => String(val).toLowerCase().includes(searchTerm)));
-                }
+                if (ui.tableHead.innerHTML === '') ui.tableHead.innerHTML = `<tr>${headers.map(h => `<th data-key="${h}">${h} <span class="sort-indicator"></span></th>`).join('')}</tr>`;
+                
+                let filteredData = data.filter(flat => Object.values(flat).some(val => String(val).toLowerCase().includes(ui.tableSearch.value.toLowerCase())));
 
                 const sortedData = [...filteredData].sort((a, b) => {
                     const valA = a[currentSort.key], valB = b[currentSort.key];
-                    if (typeof valA === 'number' && typeof valB === 'number') return currentSort.asc ? valA - valB : valB - valA;
+                    if (typeof valA === 'number') return currentSort.asc ? valA - valB : valB - valA;
                     return currentSort.asc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
                 });
                 
-                tableBody.innerHTML = sortedData.map(flat => `
-                    <tr>
-                        <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
-                        <td><span class="status-badge status-${String(flat['स्थिती']).replace(/\s+/g, '-')}">${flat['स्थिती'] || '-'}</span></td>
-                        <td>${flat['खरेदीदाराचे नाव'] || '-'}</td>
-                        <td>${formatCurrency(flat['अंतिम किंमत'])}</td>
-                        <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
-                        <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
-                    </tr>
-                `).join('');
+                ui.tableBody.innerHTML = sortedData.map(flat => `<tr><td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td><td><span class="status-badge status-${String(flat['स्थिती']).replace(/\s+/g, '-')}">${flat['स्थिती'] || '-'}</span></td><td>${flat['खरेदीदाराचे नाव'] || '-'}</td><td>${formatCurrency(flat['अंतिम किंमत'])}</td><td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td><td>${formatCurrency(flat['शिल्लक रक्कम'])}</td></tr>`).join('');
                 
-                document.querySelectorAll('#table-head th .sort-indicator').forEach(span => span.textContent = '');
+                document.querySelectorAll('#table-head th .sort-indicator').forEach(s => s.textContent = '');
                 const activeTh = document.querySelector(`#table-head th[data-key="${currentSort.key}"]`);
                 if (activeTh) activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
             }
             
             function showModal(title, data) {
-                modalTitle.textContent = title;
-                modalList.innerHTML = data.map(flat => `
-                    <li>
-                        <span>${flat['फ्लॅट आयडी']}</span>
-                        <span>${flat['खरेदीदाराचे नाव'] || '-'}</span>
-                        <span>${formatToCrores(flat['एकूण भरलेली रक्कम'])}</span>
-                        <span>${formatToCrores(flat['शिल्लक रक्कम'])}</span>
-                    </li>
-                `).join('');
-                if (data.length === 0) modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
-                modal.style.display = 'flex';
+                ui.modalTitle.textContent = title;
+                ui.modalList.innerHTML = data.length > 0 ? data.map(f => `<li><span>${f['फ्लॅट आयडी']}</span><span>${f['खरेदीदाराचे नाव'] || '-'}</span><span>${formatToCrores(f['एकूण भरलेली रक्कम'])}</span><span>${formatToCrores(f['शिल्लक रक्कम'])}</span></li>`).join('') : '<li><span>माहिती उपलब्ध नाही</span></li>';
+                ui.modal.style.display = 'flex';
             }
 
-            function hideModal() { modal.style.display = 'none'; }
+            function setupEventListeners() {
+                ui.kpiCards.forEach(card => card.addEventListener('click', () => {
+                    const filter = card.dataset.filter; let filteredData = allFlatsData;
+                    if (filter === 'sold') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
+                    else if (filter === 'available') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'उपलब्ध');
+                    else if (filter === 'collected-positive') filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
+                    else if (filter === 'pending-positive') filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0);
+                    showModal(card.dataset.title, filteredData);
+                }));
 
-            kpiCards.forEach(card => card.addEventListener('click', () => {
-                const filter = card.dataset.filter, title = card.dataset.title;
-                let filteredData = allFlatsData;
-
-                if (filter === 'sold') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
-                else if (filter === 'available') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'उपलब्ध');
-                else if (filter === 'collected-positive') filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
-                else if (filter === 'pending-positive') filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0);
+                const hideModal = () => { ui.modal.style.display = 'none'; };
+                ui.modalCloseBtn.addEventListener('click', hideModal);
+                ui.modal.addEventListener('click', (e) => { if (e.target === ui.modal) hideModal(); });
                 
-                showModal(title, filteredData);
-            }));
+                ui.tableSearch.addEventListener('input', () => renderTable(allFlatsData));
+                
+                ui.tableHead.addEventListener('click', e => {
+                    const key = e.target.closest('th')?.dataset.key; if (!key) return;
+                    currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
+                    currentSort.key = key;
+                    renderTable(allFlatsData);
+                });
+            }
 
-            modalCloseBtn.addEventListener('click', hideModal);
-            modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
-            tableSearchInput.addEventListener('input', () => renderTable(allFlatsData));
-            tableHead.addEventListener('click', e => {
-                const key = e.target.closest('th')?.dataset.key;
-                if (!key) return;
-                currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
-                currentSort.key = key;
-                renderTable(allFlatsData);
-            });
-
-            fetchAndProcessData();
+            init();
         });
     </script>
 </body>
