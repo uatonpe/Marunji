@@ -330,10 +330,9 @@
     </div>
 
     <script>
-        // ▼▼▼ तुमच्या Publish केलेल्या Sheet च्या CSV लिंक इथे पेस्ट करा ▼▼▼
-        const FLATS_CSV_URL = 'YOUR_FLATS_CSV_URL_HERE';
-        const PAYMENTS_CSV_URL = 'YOUR_PAYMENTS_CSV_URL_HERE';
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        // तुमच्या पब्लिश केलेल्या Sheet च्या CSV लिंक इथे टाकलेल्या आहेत
+        const FLATS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=0&single=true&output=csv';
+        const PAYMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=1815984816&single=true&output=csv';
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -370,18 +369,14 @@
             async function fetchAndProcessData() {
                 showLoading(true);
                 try {
-                    // दोन्ही शीटचा डेटा एकाच वेळी मिळवा
                     const [flats, payments] = await Promise.all([
                         fetchData(FLATS_CSV_URL),
                         fetchData(PAYMENTS_CSV_URL)
                     ]);
 
-                    // डेटा एकत्र करून डॅशबोर्डसाठी तयार करा
                     allFlatsData = flats.map(flat => {
                         const flatPayments = payments.filter(p => p['फ्लॅट आयडी'] === flat['फ्लॅट आयडी']);
                         const totalPaid = flatPayments.reduce((sum, p) => sum + Number(p['रक्कम']), 0);
-                        
-                        // अंतिम किंमत किंवा मूळ किंमत वापरा
                         const finalPrice = Number(flat['अंतिम किंमत']) || Number(flat['किंमत']);
                         const remainingBalance = finalPrice - totalPaid;
 
@@ -398,7 +393,7 @@
 
                 } catch (error) {
                     console.error('डेटा मिळवताना त्रुटी:', error);
-                    loadingOverlay.innerHTML = `<span>त्रुटी: ${error.message}</span>`;
+                    loadingOverlay.innerHTML = `<span>त्रुटी: ${error.message}<br>तुमच्या लिंकमध्ये काहीतरी समस्या असू शकते.</span>`;
                 } finally {
                     setTimeout(() => showLoading(false), 500);
                 }
@@ -497,7 +492,7 @@
                 `).join('');
             }
 
-            // --- Event Listeners ---
+            // --- Event Listeners and Initializer ---
             kpiCards.forEach(card => card.addEventListener('click', () => {
                 kpiCards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
@@ -515,17 +510,8 @@
                 renderTable(allFlatsData);
             });
 
-            // --- Initializer ---
-            function init() {
-                if (FLATS_CSV_URL === 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=0&single=true&output=csv' || PAYMENTS_CSV_URL === 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=1815984816&single=true&output=csv') {
-                    loadingOverlay.innerHTML = '<span>त्रुटी: कृपया Published CSV URLs सेट करा.</span>';
-                    return;
-                }
-                fetchAndProcessData();
-            }
-            init();
+            document.addEventListener('DOMContentLoaded', fetchAndProcessData);
         });
     </script>
 </body>
-
 </html>
