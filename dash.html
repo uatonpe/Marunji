@@ -148,7 +148,8 @@
 
     <div class="dashboard-container">
         <header class="header">
-            <h1><i class="fa-solid fa-city"></i> विक्री डॅशबोर्ड</h1>
+            <!-- *** MODIFIED: Title changed as requested *** -->
+            <h1><i class="fa-solid fa-city"></i> TODKAR & WAJE Construction</h1>
         </header>
 
         <main class="main-content">
@@ -195,7 +196,6 @@
                 </div>
             </section>
 
-            <!-- *** LAYOUT UPDATED TO INCLUDE THE NEW CHART *** -->
             <section class="charts-grid">
                 <div class="building-view-container">
                     <h3>बिल्डिंग स्टेटस व्ह्यू</h3>
@@ -205,7 +205,6 @@
                     <h3>फ्लॅट स्थिती</h3>
                     <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
                 </div>
-                <!-- *** NEW CHART CONTAINER ADDED HERE *** -->
                 <div class="chart-container">
                     <h3>रक्कम स्थिती (विक्री झालेल्या फ्लॅट्सची)</h3>
                     <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
@@ -334,7 +333,8 @@
                 if (chartInstances.status) chartInstances.status.destroy();
                 
                 const statusCounts = data.reduce((acc, f) => {
-                    if(f['स्थिती']) acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
+                    const status = f['स्थिती'] === 'विक्री झाली' ? 'विक्री झाली' : 'उपलब्ध';
+                    acc[status] = (acc[status] || 0) + 1;
                     return acc;
                 }, {});
                 
@@ -377,7 +377,6 @@
                 });
             }
 
-            // *** NEW FUNCTION TO RENDER THE PAYMENT STATUS CHART ***
             function renderPaymentStatusChart(data) {
                 if (chartInstances.payment) chartInstances.payment.destroy();
 
@@ -385,7 +384,6 @@
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
                 
-                // Only render the chart if there are amounts to show
                 if (totalCollected <= 0 && totalPending <= 0) return;
 
                 chartInstances.payment = new Chart('payment-status-chart', {
@@ -430,7 +428,8 @@
                 sortedData.forEach(flat => {
                     const block = document.createElement('div');
                     block.className = 'flat-block';
-                    block.classList.add(flat['स्थिती'] === 'विक्री झाली' ? 'status-sold' : 'status-available');
+                    const isSold = flat['स्थिती'] === 'विक्री झाली';
+                    block.classList.add(isSold ? 'status-sold' : 'status-available');
                     block.textContent = flat['फ्लॅट आयडी'];
 
                     const tooltip = document.createElement('span');
@@ -461,48 +460,92 @@
                     return currentSort.asc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
                 });
                 
-                tableBody.innerHTML = sortedData.map(flat => `
-                    <tr>
-                        <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
-                        <td><span class="status-badge status-${String(flat['स्थिती']).replace(/\s+/g, '-')}">${flat['स्थिती'] || '-'}</span></td>
-                        <td>${flat['खरेदीदाराचे नाव'] || '-'}</td>
-                        <td>${formatCurrency(flat['अंतिम किंमत'])}</td>
-                        <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
-                        <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
-                    </tr>
-                `).join('');
+                // *** MODIFIED: Table row generation updated as per request ***
+                tableBody.innerHTML = sortedData.map(flat => {
+                    const isSold = flat['स्थिती'] === 'विक्री झाली';
+                    const statusText = isSold ? 'विक्री झाली' : 'उपलब्ध';
+                    const buyerText = isSold ? (flat['खरेदीदाराचे नाव'] || '-') : 'Available for Sale';
+
+                    return `
+                        <tr>
+                            <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
+                            <td><span class="status-badge status-${statusText.replace(/\s+/g, '-')}">${statusText}</span></td>
+                            <td>${buyerText}</td>
+                            <td>${formatCurrency(flat['अंतिम किंमत'])}</td>
+                            <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
+                            <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
+                        </tr>
+                    `;
+                }).join('');
                 
                 document.querySelectorAll('#table-head th .sort-indicator').forEach(span => span.textContent = '');
                 const activeTh = document.querySelector(`#table-head th[data-key="${currentSort.key}"]`);
                 if (activeTh) activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
             }
             
-            function showModal(title, data) {
+            // *** MODIFIED: Modal function updated to show different content based on filter ***
+            function showModal(title, data, filter) {
                 modalTitle.textContent = title;
-                modalList.innerHTML = data.map(flat => `
-                    <li>
-                        <span>${flat['फ्लॅट आयडी']}</span>
-                        <span>${flat['खरेदीदाराचे नाव'] || '-'}</span>
-                        <span>${formatToCrores(flat['एकूण भरलेली रक्कम'])}</span>
-                        <span>${formatToCrores(flat['शिल्लक रक्कम'])}</span>
-                    </li>
-                `).join('');
-                if (data.length === 0) modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
+                let modalHTML = '';
+
+                if (filter === 'available') {
+                    modalHTML += `
+                        <li style="font-weight: bold; background-color: #f7f7f7;">
+                            <span style="flex-basis: 50%;">फ्लॅट आयडी</span>
+                            <span style="flex-basis: 50%;">किंमत</span>
+                        </li>`;
+                    modalHTML += data.map(flat => `
+                        <li>
+                            <span style="flex-basis: 50%;">${flat['फ्लॅट आयडी']}</span>
+                            <span style="flex-basis: 50%;">${formatCurrency(flat['अंतिम किंमत'])}</span>
+                        </li>
+                    `).join('');
+                } else {
+                     modalHTML += `
+                        <li style="font-weight: bold; background-color: #f7f7f7;">
+                            <span>फ्लॅट आयडी</span>
+                            <span>खरेदीदार</span>
+                            <span>जमा रक्कम</span>
+                            <span>शिल्लक रक्कम</span>
+                        </li>`;
+                    modalHTML += data.map(flat => `
+                        <li>
+                            <span>${flat['फ्लॅट आयडी']}</span>
+                            <span>${flat['खरेदीदाराचे नाव'] || '-'}</span>
+                            <span>${formatToCrores(flat['एकूण भरलेली रक्कम'])}</span>
+                            <span>${formatToCrores(flat['शिल्लक रक्कम'])}</span>
+                        </li>
+                    `).join('');
+                }
+
+                modalList.innerHTML = modalHTML;
+                if (data.length === 0) {
+                    modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
+                }
                 modal.style.display = 'flex';
             }
 
             function hideModal() { modal.style.display = 'none'; }
-
+            
+            // *** MODIFIED: KPI card click listener updated ***
             kpiCards.forEach(card => card.addEventListener('click', () => {
-                const filter = card.dataset.filter, title = card.dataset.title;
-                let filteredData = allFlatsData;
+                const filter = card.dataset.filter;
+                const title = card.dataset.title;
+                let filteredData = [];
 
-                if (filter === 'sold') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
-                else if (filter === 'available') filteredData = allFlatsData.filter(f => f['स्थिती'] === 'उपलब्ध');
-                else if (filter === 'collected-positive') filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
-                else if (filter === 'pending-positive') filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0);
+                if (filter === 'all') {
+                    filteredData = allFlatsData;
+                } else if (filter === 'sold') {
+                    filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
+                } else if (filter === 'available') {
+                    filteredData = allFlatsData.filter(f => f['स्थिती'] !== 'विक्री झाली');
+                } else if (filter === 'collected-positive') {
+                    filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
+                } else if (filter === 'pending-positive') {
+                    filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0);
+                }
                 
-                showModal(title, filteredData);
+                showModal(title, filteredData, filter);
             }));
 
             modalCloseBtn.addEventListener('click', hideModal);
