@@ -350,7 +350,7 @@
             const tableBody = document.getElementById('table-body');
 
             // --- Helper Functions ---
-            const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN')}`;
+            const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
             const showLoading = (show) => { loadingOverlay.style.display = show ? 'flex' : 'none'; };
 
             // --- Data Fetching and Processing ---
@@ -373,11 +373,19 @@
                         fetchData(FLATS_CSV_URL),
                         fetchData(PAYMENTS_CSV_URL)
                     ]);
+                    
+                    // Data cleaning: remove thousands separators from numbers before calculation
+                    const cleanNumber = (val) => {
+                        if (typeof val === 'string') {
+                            return Number(val.replace(/,/g, '')) || 0;
+                        }
+                        return Number(val) || 0;
+                    };
 
                     allFlatsData = flats.map(flat => {
                         const flatPayments = payments.filter(p => p['फ्लॅट आयडी'] === flat['फ्लॅट आयडी']);
-                        const totalPaid = flatPayments.reduce((sum, p) => sum + Number(p['रक्कम']), 0);
-                        const finalPrice = Number(flat['अंतिम किंमत']) || Number(flat['किंमत']);
+                        const totalPaid = flatPayments.reduce((sum, p) => sum + cleanNumber(p['रक्कम']), 0);
+                        const finalPrice = cleanNumber(flat['अंतिम किंमत']) || cleanNumber(flat['किंमत']);
                         const remainingBalance = finalPrice - totalPaid;
 
                         return {
@@ -393,9 +401,10 @@
 
                 } catch (error) {
                     console.error('डेटा मिळवताना त्रुटी:', error);
-                    loadingOverlay.innerHTML = `<span>त्रुटी: ${error.message}<br>तुमच्या लिंकमध्ये काहीतरी समस्या असू शकते.</span>`;
+                    loadingOverlay.innerHTML = `<span>त्रुटी: ${error.message}<br>कृपया तुमच्या Google Sheet च्या 'Publish to web' लिंक तपासा.</span>`;
                 } finally {
-                    setTimeout(() => showLoading(false), 500);
+                    // Give a slight delay for a smoother transition
+                    setTimeout(() => showLoading(false), 300);
                 }
             }
             
@@ -426,9 +435,16 @@
 
                 const paymentsByMonth = soldFlats.flatMap(f => f['पेमेंट्स']).reduce((acc, p) => {
                     if (!p['तारीख']) return acc;
-                    const month = p['तारीख'].substring(0, 7); // YYYY-MM
-                    acc[month] = (acc[month] || 0) + Number(p['रक्कम']);
-                    return acc;
+                    try {
+                        const [day, month, year] = p['तारीख'].split('/');
+                        if(!day || !month || !year) return acc;
+                        // Assuming DD/MM/YYYY format, create a consistent YYYY-MM key
+                        const monthKey = `${year}-${month.padStart(2, '0')}`;
+                        acc[monthKey] = (acc[monthKey] || 0) + (Number(String(p['रक्कम']).replace(/,/g, '')) || 0);
+                        return acc;
+                    } catch (e) {
+                        return acc;
+                    }
                 }, {});
                 const sortedMonths = Object.keys(paymentsByMonth).sort();
                 
@@ -464,53 +480,68 @@
                 const searchTerm = tableSearchInput.value.toLowerCase();
                 if (searchTerm) {
                     filteredData = filteredData.filter(flat => 
-                        flat['फ्लॅट आयडी'].toLowerCase().includes(searchTerm) ||
+                        String(flat['फ्लॅट आयडी']).toLowerCase().includes(searchTerm) ||
                         String(flat['खरेदीदाराचे नाव']).toLowerCase().includes(searchTerm) ||
-                        flat['स्थिती'].toLowerCase().includes(searchTerm)
+                        String(flat['स्थिती']).toLowerCase().includes(searchTerm)
                     );
                 }
 
                 const sortedData = [...filteredData].sort((a, b) => {
                     const valA = a[currentSort.key]; const valB = b[currentSort.key];
-                    const numA = parseFloat(String(valA).replace(/[₹,]/g, ''));
-                    const numB = parseFloat(String(valB).replace(/[₹,]/g, ''));
-                    if (!isNaN(numA) && !isNaN(numB)) { return currentSort.asc ? numA - numB : numB - numA; }
-                    if (valA < valB) return currentSort.asc ? -1 : 1;
-                    if (valA > valB) return currentSort.asc ? 1 : -1;
+                    if (typeof valA === 'number' && typeof valB === 'number') {
+                        return currentSort.asc ? valA - valB : valB - valA;
+                    }
+                    if (String(valA) < String(valB)) return currentSort.asc ? -1 : 1;
+                    if (String(valA) > String(valB)) return currentSort.asc ? 1 : -1;
                     return 0;
                 });
                 
                 tableBody.innerHTML = sortedData.map(flat => `
                     <tr>
-                        <td><strong>${flat['फ्लॅट आयडी']}</strong></td>
-                        <td><span class="status-badge status-${flat['स्थिती'].replace(/\s+/g, '-')}">${flat['स्थिती']}</span></td>
+                        <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
+                        <td><span class="status-badge status-${String(flat['स्थिती']).replace(/\s+/g, '-')}">${flat['स्थिती'] || '-'}</span></td>
                         <td>${flat['खरेदीदाराचे नाव'] || '-'}</td>
                         <td>${formatCurrency(flat['अंतिम किंमत'])}</td>
                         <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
                         <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
                     </tr>
                 `).join('');
+                
+                // Update sort indicator in table header
+                document.querySelectorAll('#table-head th .sort-indicator').forEach(span => span.textContent = '');
+                const activeTh = document.querySelector(`#table-head th[data-key="${currentSort.key}"]`);
+                if (activeTh) {
+                    activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
+                }
             }
 
             // --- Event Listeners and Initializer ---
-            kpiCards.forEach(card => card.addEventListener('click', () => {
+            kpiCards.forEach(card => card.addEventListener('click', (e) => {
+                if(loadingOverlay.style.display === 'flex') return;
                 kpiCards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 currentFilter = card.dataset.filter;
                 renderTable(allFlatsData);
             }));
+
             tableSearchInput.addEventListener('input', () => renderTable(allFlatsData));
+            
             tableHead.addEventListener('click', e => {
-                const key = e.target.closest('th')?.dataset.key;
+                const headerCell = e.target.closest('th');
+                if (!headerCell) return;
+                const key = headerCell.dataset.key;
                 if (!key) return;
-                currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
-                currentSort.key = key;
-                document.querySelectorAll('#table-head th .sort-indicator').forEach(span => span.textContent = '');
-                e.target.closest('th').querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
+                
+                if (currentSort.key === key) {
+                    currentSort.asc = !currentSort.asc;
+                } else {
+                    currentSort.key = key;
+                    currentSort.asc = true;
+                }
                 renderTable(allFlatsData);
             });
 
-            document.addEventListener('DOMContentLoaded', fetchAndProcessData);
+            fetchAndProcessData();
         });
     </script>
 </body>
