@@ -228,7 +228,6 @@
             </div>
             
             <section class="kpi-grid">
-                <!-- Data attributes now hold title for modal -->
                 <div class="kpi-card kpi-total" data-filter="all" data-title="एकूण सर्व फ्लॅट्स">
                     <div class="icon"><i class="fa-solid fa-building"></i></div>
                     <div class="info">
@@ -328,16 +327,11 @@
 
             const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
             
-            // New function to format large numbers to Lakhs/Crores
             const formatToCrores = (num) => {
                 const number = Number(num);
                 if (isNaN(number)) return '₹0';
-                if (number >= 10000000) {
-                    return `₹${(number / 10000000).toFixed(2)} Cr`;
-                }
-                if (number >= 100000) {
-                    return `₹${(number / 100000).toFixed(2)} L`;
-                }
+                if (number >= 10000000) return `₹${(number / 10000000).toFixed(2)} Cr`;
+                if (number >= 100000) return `₹${(number / 100000).toFixed(2)} L`;
                 return formatCurrency(number);
             };
 
@@ -401,22 +395,86 @@
                 document.getElementById('kpi-total-pending').textContent = formatToCrores(totalPending);
             }
 
+            // *** CHART RENDERING LOGIC IS UPDATED HERE ***
             function renderCharts(data) {
-                Object.values(chartInstances).forEach(chart => chart.destroy());
+                if (chartInstances.status) {
+                    chartInstances.status.destroy();
+                }
                 
-                const statusCounts = data.reduce((acc, f) => { acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1; return acc; }, {});
+                const statusCounts = data.reduce((acc, f) => {
+                    if(f['स्थिती']) {
+                       acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
+                    }
+                    return acc;
+                }, {});
+                
+                const colorMap = { 'विक्री झाली': '#2ecc71', 'उपलब्ध': '#f39c12' };
+                const chartLabels = [];
+                const chartData = [];
+                const chartColors = [];
+
+                for (const status in statusCounts) {
+                    if (statusCounts[status] > 0) {
+                        chartLabels.push(status);
+                        chartData.push(statusCounts[status]);
+                        chartColors.push(colorMap[status] || '#bdc3c7');
+                    }
+                }
+                
+                // If there's no data, don't render the chart
+                if (chartData.length === 0) return;
+
+                const centerTextPlugin = {
+                    id: 'centerText',
+                    beforeDraw: (chart) => {
+                        if (chart.config.type !== 'doughnut' || chart.data.datasets[0].data.length === 0) return;
+                        const ctx = chart.ctx;
+                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        
+                        ctx.save();
+                        const x = chart.getDatasetMeta(0).data[0].x;
+                        const y = chart.getDatasetMeta(0).data[0].y;
+                        
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // Main number
+                        ctx.font = 'bold 32px ' + getComputedStyle(document.body).getPropertyValue('--font-family');
+                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary-text');
+                        ctx.fillText(total, x, y - 10);
+                        
+                        // Label
+                        ctx.font = '500 14px ' + getComputedStyle(document.body).getPropertyValue('--font-family');
+                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text');
+                        ctx.fillText('एकूण फ्लॅट्स', x, y + 15);
+                        
+                        ctx.restore();
+                    }
+                };
+
                 chartInstances.status = new Chart('status-chart', {
                     type: 'doughnut', 
                     data: { 
-                        labels: ['विक्री झाली', 'उपलब्ध'], 
+                        labels: chartLabels, 
                         datasets: [{ 
-                            data: [statusCounts['विक्री झाली'] || 0, statusCounts['उपलब्ध'] || 0], 
-                            backgroundColor: ['#2ecc71', '#f39c12'],
+                            data: chartData, 
+                            backgroundColor: chartColors,
                             borderColor: '#ffffff',
                             borderWidth: 4,
+                            hoverOffset: 8
                         }] 
                     }, 
-                    options: { responsive: true, maintainAspectRatio: false, cuttout: '70%' }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        }
+                    },
+                    plugins: [centerTextPlugin]
                 });
             }
 
@@ -477,7 +535,6 @@
                 if (activeTh) activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
             }
             
-            // Modal Functions
             function showModal(title, data) {
                 modalTitle.textContent = title;
                 modalList.innerHTML = data.map(flat => `
