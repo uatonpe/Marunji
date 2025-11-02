@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>विक्री डेटा एंट्री फॉर्म</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        
+        /* --- General Styles --- */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+            --error-bg: #f8d7da;
+            --error-text: #721c24;
+            --light-gray: #f8f9fa;
+            --border-color: #cdd3db;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f0f4f8; 
+            margin: 0; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
+
+        /* --- Main Layout --- */
+        main {
+            display: grid;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px; /* Max width for desktop */
+            margin: 0 auto;
+        }
+
+        /* --- Responsive Grid Layout --- */
+        @media (min-width: 992px) { /* Desktop View */
+            main {
+                grid-template-columns: 1fr 1fr; /* Two columns on desktop */
+            }
+        }
+        @media (max-width: 991px) { /* Mobile and Tablet View */
+            main {
+                grid-template-columns: 1fr; /* Single column on smaller screens */
+            }
+        }
+
+        /* --- Container/Card Styles --- */
+        .container { 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,37,86,0.1); 
+        }
+
+        h2 { 
+            text-align: center; 
+            color: #1a3b5d; 
+            margin-top: 0; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid var(--primary-color); 
+            padding-bottom: 10px; 
+        }
+
+        /* --- Form Elements --- */
+        .form-group { margin-bottom: 15px; }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: #334e68; 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            transition: border-color 0.3s, box-shadow 0.3s; 
+        }
+
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--primary-color); 
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1); 
+        }
+
+        input[readonly] { 
+            background-color: #e9ecef; 
+            cursor: not-allowed; 
+        }
+        
+        .total-price { 
+            font-size: 1.2em; 
+            font-weight: 600; 
+            color: #28a745; 
+            text-align: right; 
+            margin-top: 10px; 
+            padding: 10px; 
+            background-color: var(--light-gray); 
+            border-radius: 8px; 
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            margin-top: 10px; 
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark)); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: transform 0.2s, background 0.3s; 
+        }
+
+        button:hover:not(:disabled) { transform: scale(1.02); }
+        button:disabled { background: #a0aec0; cursor: not-allowed; }
+
+        /* --- Feedback Messages --- */
+        .message { 
+            text-align: center; 
+            margin-top: 20px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            white-space: pre-wrap; 
+            padding: 15px; 
+            border-radius: 8px; 
+            display: none; 
+        }
+        .success { color: var(--success-text); background-color: var(--success-bg); border: 1px solid #c3e6cb; }
+        .error { color: var(--error-text); background-color: var(--error-bg); border: 1px solid #f5c6cb; }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <!-- नवीन विक्री नोंदणी फॉर्म -->
+        <div class="container">
+            <h2>🏠 नवीन विक्री नोंदवा</h2>
+            <form id="newSaleForm">
+                <input type="hidden" name="action" value="addNewSale">
+                <div class="form-group">
+                    <label for="availableFlats">उपलब्ध फ्लॅट:</label>
+                    <select id="availableFlats" name="flatId" required>
+                        <option value="">लोड होत आहे...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="basePrice">फ्लॅटची मूळ किंमत (₹):</label>
+                    <input type="text" id="basePrice" name="basePrice" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="finalRate">अंतिम किंमत (Final Rate) (₹):</label>
+                    <input type="number" id="finalRate" name="finalRate" min="1" required>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label for="buyerName">खरेदीदाराचे नाव:</label>
+                    <input type="text" id="buyerName" name="buyerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="buyerContact">खरेदीदाराचा संपर्क:</label>
+                    <input type="tel" id="buyerContact" name="buyerContact" required>
+                </div>
+                 <div class="form-group">
+                    <label for="saleDate">विक्रीची तारीख:</label>
+                    <input type="date" id="saleDate" name="saleDate" required>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label for="registryExp">रजिस्ट्री खर्च (₹):</label>
+                    <input type="number" class="expense" id="registryExp" name="registryExp" value="0" min="0">
+                </div>
+                 <div class="form-group">
+                    <label for="legalExp">कायदेशीर खर्च (₹):</label>
+                    <input type="number" class="expense" id="legalExp" name="legalExp" value="0" min="0">
+                </div>
+                 <div class="form-group">
+                    <label for="otherExp">इतर खर्च (₹):</label>
+                    <input type="number" class="expense" id="otherExp" name="otherExp" value="0" min="0">
+                </div>
+                <div class="total-price" id="totalPriceDisplay">एकूण किंमत: ₹0.00</div>
+                <hr>
+                <div class="form-group">
+                    <label for="bookingAmount">बुकिंग रक्कम (₹):</label>
+                    <input type="number" id="bookingAmount" name="bookingAmount" min="1" required>
+                </div>
+                <input type="hidden" id="totalPrice" name="totalPrice">
+                <button type="submit" id="saleSubmitBtn">विक्री नोंदवा</button>
+            </form>
+            <div id="saleMessage" class="message"></div>
+        </div>
+
+        <!-- हप्ता जमा करण्याचा फॉर्म -->
+        <div class="container">
+            <h2>💰 हप्ता जमा करा</h2>
+            <form id="installmentForm">
+                <input type="hidden" name="action" value="addInstallment">
+                <div class="form-group">
+                   <label for="soldFlats">विक्री झालेले फ्लॅट:</label>
+                   <select id="soldFlats" name="flatId" required>
+                       <option value="">लोड होत आहे...</option>
+                   </select>
+               </div>
+               <div class="form-group">
+                   <label for="paymentDate">पेमेंटची तारीख:</label>
+                   <input type="date" id="paymentDate" name="paymentDate" required>
+               </div>
+               <div class="form-group">
+                   <label for="paymentAmount">हप्त्याची रक्कम (₹):</label>
+                   <input type="number" id="paymentAmount" name="paymentAmount" min="1" required>
+               </div>
+               <div class="form-group">
+                   <label for="notes">टीप (ऐच्छिक):</label>
+                   <input type="text" id="notes" name="notes">
+               </div>
+               <button type="submit" id="installmentSubmitBtn">हप्ता जमा करा</button>
+            </form>
+            <div id="installmentMessage" class="message"></div>
+        </div>
+    </main>
+    
+    <!-- JavaScript Code (Single Script Tag) -->
+    <script>
+        // ▼▼▼ तुमचा तैनात केलेला वेब ॲप URL इथे पेस्ट करा ▼▼▼
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxHR51DZG8-Xl22XQAP8IVmAjwUlc86yE0CREr64c0pBaCqB8f6YMOSBxTk_tRY1tY/exec';
+
+        // --- Element Selectors ---
+        const availableFlatsSelect = document.getElementById('availableFlats');
+        const soldFlatsSelect = document.getElementById('soldFlats');
+        const newSaleForm = document.getElementById('newSaleForm');
+        const installmentForm = document.getElementById('installmentForm');
+        const basePriceInput = document.getElementById('basePrice');
+        const finalRateInput = document.getElementById('finalRate');
+        const totalPriceDisplay = document.getElementById('totalPriceDisplay');
+        const totalPriceHiddenInput = document.getElementById('totalPrice');
+        const expenseInputs = document.querySelectorAll('.expense');
+        
+        let availableFlatsData = [];
+
+        // --- Helper Functions ---
+        const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        function updateTotalPrice() {
+            const finalRate = parseFloat(finalRateInput.value) || 0;
+            const registryExp = parseFloat(document.getElementById('registryExp').value) || 0;
+            const legalExp = parseFloat(document.getElementById('legalExp').value) || 0;
+            const otherExp = parseFloat(document.getElementById('otherExp').value) || 0;
+            
+            const total = finalRate + registryExp + legalExp + otherExp;
+            
+            totalPriceDisplay.textContent = `एकूण किंमत: ${formatCurrency(total)}`;
+            totalPriceHiddenInput.value = total;
+        }
+        
+        // --- Data Fetching ---
+        async function fetchAndPopulateForms() {
+            try {
+                const response = await fetch(WEB_APP_URL);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    availableFlatsData = data.availableFlats;
+                    availableFlatsSelect.innerHTML = '<option value="">-- फ्लॅट निवडा --</option>';
+                    availableFlatsData.forEach(flat => {
+                        const option = new Option(`${flat.flatId} - (${formatCurrency(flat.price)})`, flat.flatId);
+                        availableFlatsSelect.add(option);
+                    });
+
+                    soldFlatsSelect.innerHTML = '<option value="">-- फ्लॅट निवडा --</option>';
+                    data.soldFlats.forEach(flatInfo => {
+                        const option = new Option(flatInfo, flatInfo);
+                        soldFlatsSelect.add(option);
+                    });
+                } else { throw new Error(data.message); }
+            } catch (error) {
+                console.error("Error loading flats:", error);
+                availableFlatsSelect.innerHTML = `<option value="">एरर!</option>`;
+                soldFlatsSelect.innerHTML = `<option value="">एरर!</option>`;
+            }
+        }
+
+        // --- Form Submission Logic ---
+        async function handleFormSubmit(event, form, submitBtn, messageDiv) {
+            event.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'पाठवत आहे...';
+            messageDiv.style.display = 'none';
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+                const resultText = await response.text();
+                if (!response.ok) throw new Error(resultText);
+
+                messageDiv.textContent = resultText;
+                messageDiv.className = 'message success';
+                form.reset();
+                form.querySelector('input[type="date"]').valueAsDate = new Date();
+                if (form.id === 'newSaleForm') {
+                    basePriceInput.value = '';
+                    finalRateInput.value = '';
+                    updateTotalPrice();
+                }
+                fetchAndPopulateForms();
+            } catch (error) {
+                messageDiv.textContent = error.message.replace('त्रुटी: ', '');
+                messageDiv.className = 'message error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = form.id === 'newSaleForm' ? 'विक्री नोंदवा' : 'हप्ता जमा करा';
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        // --- Event Listeners and Initializer ---
+        function initialize() {
+            // Set default dates
+            document.getElementById('saleDate').valueAsDate = new Date();
+            document.getElementById('paymentDate').valueAsDate = new Date();
+
+            // Attach event listeners
+            availableFlatsSelect.addEventListener('change', () => {
+                const selectedFlatId = availableFlatsSelect.value;
+                const selectedFlat = availableFlatsData.find(f => f.flatId === selectedFlatId);
+                if (selectedFlat) {
+                    basePriceInput.value = selectedFlat.price;
+                    finalRateInput.value = selectedFlat.price;
+                } else {
+                    basePriceInput.value = '';
+                    finalRateInput.value = '';
+                }
+                updateTotalPrice();
+            });
+
+            expenseInputs.forEach(input => input.addEventListener('input', updateTotalPrice));
+            finalRateInput.addEventListener('input', updateTotalPrice);
+            
+            newSaleForm.addEventListener('submit', (e) => handleFormSubmit(e, newSaleForm, document.getElementById('saleSubmitBtn'), document.getElementById('saleMessage')));
+            installmentForm.addEventListener('submit', (e) => handleFormSubmit(e, installmentForm, document.getElementById('installmentSubmitBtn'), document.getElementById('installmentMessage')));
+            
+            // Initial data load
+            fetchAndPopulateForms();
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
