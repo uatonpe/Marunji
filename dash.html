@@ -144,9 +144,12 @@
         .modal-list li { display: flex; justify-content: space-between; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
         .modal-list li:last-child { border-bottom: none; }
         .modal-list li span { text-align: left; }
-        .modal-list li span.modal-flat { flex: 1; font-weight: 600; }
-        .modal-list li span.modal-buyer { flex: 2; }
-        .modal-list li span.modal-amount { flex: 1.5; text-align: right; }
+        .modal-list .modal-header-row { font-weight: bold; background-color: #f7f9fc; }
+        .modal-list span { flex-shrink: 0; padding: 0 5px; }
+        .modal-list .col-flat { flex-basis: 15%; }
+        .modal-list .col-buyer { flex-basis: 30%; }
+        .modal-list .col-amount { flex-basis: 27.5%; text-align: right;}
+
         @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     </style>
@@ -311,7 +314,6 @@
 
             function renderKPIs(data) {
                 const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
-                
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
                 const totalStampDuty = soldFlats.reduce((sum, f) => sum + f['स्टॅम्प ड्युटी'], 0);
@@ -329,7 +331,6 @@
             }
 
             function renderCharts(data) {
-                // Existing chart functions remain the same
                 renderFlatStatusChart(data);
                 renderPaymentStatusChart(data);
             }
@@ -441,29 +442,48 @@
             function showModal(title, data, filter) {
                 modalTitle.textContent = title;
                 let modalHTML = '';
-                let amountKey = '';
-                let amountHeader = 'रक्कम';
 
-                if (filter === 'stamp-duty') { amountKey = 'स्टॅम्प ड्युटी'; amountHeader = 'स्टॅम्प ड्युटी'; }
-                else if (filter === 'registry') { amountKey = 'रजिस्ट्री खर्च'; amountHeader = 'रजिस्ट्री खर्च'; }
-                else if (filter === 'bank-exp') { amountKey = 'बँक खर्च'; amountHeader = 'बँक खर्च'; }
-                
-                if (amountKey) {
+                if (filter === 'available') {
                     modalHTML = `
-                        <li style="font-weight: bold; background-color: #f7f7f7;">
-                            <span class="modal-flat">फ्लॅट आयडी</span>
-                            <span class="modal-buyer">खरेदीदार</span>
-                            <span class="modal-amount">${amountHeader}</span>
+                        <li class="modal-header-row">
+                            <span style="flex-basis: 50%;">फ्लॅट आयडी</span>
+                            <span style="flex-basis: 50%; text-align: right;">किंमत</span>
                         </li>
                         ${data.map(flat => `
                         <li>
-                            <span class="modal-flat">${flat['फ्लॅट आयडी']}</span>
-                            <span class="modal-buyer">${flat['खरेदीदाराचे नाव'] || '-'}</span>
-                            <span class="modal-amount">${formatCurrency(flat[amountKey])}</span>
+                            <span style="flex-basis: 50%;">${flat['फ्लॅट आयडी']}</span>
+                            <span style="flex-basis: 50%; text-align: right;">${formatCurrency(flat['एकूण किंमत'])}</span>
+                        </li>`).join('')}`;
+                } else if (['stamp-duty', 'registry', 'bank-exp'].includes(filter)) {
+                    const key = filter === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : filter === 'registry' ? 'रजिस्ट्री खर्च' : 'बँक खर्च';
+                    const header = filter === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : filter === 'registry' ? 'रजिस्ट्री खर्च' : 'बँक खर्च';
+                    modalHTML = `
+                        <li class="modal-header-row">
+                            <span class="col-flat">फ्लॅट आयडी</span>
+                            <span class="col-buyer">खरेदीदार</span>
+                            <span class="col-amount">${header}</span>
+                        </li>
+                        ${data.map(flat => `
+                        <li>
+                            <span class="col-flat">${flat['फ्लॅट आयडी']}</span>
+                            <span class="col-buyer">${flat['खरेदीदाराचे नाव'] || '-'}</span>
+                            <span class="col-amount">${formatCurrency(flat[key])}</span>
                         </li>`).join('')}`;
                 } else {
-                    // Fallback for other filters
-                    modalHTML = data.map(flat => `<li><span>${flat['फ्लॅट आयडी']}</span><span>${flat['खरेदीदाराचे नाव'] || '-'}</span><span>${formatToLakhs(flat['शिल्लक रक्कम'])}</span></li>`).join('');
+                    modalHTML = `
+                        <li class="modal-header-row">
+                            <span class="col-flat">फ्लॅट आयडी</span>
+                            <span class="col-buyer">खरेदीदार</span>
+                            <span class="col-amount">जमा रक्कम</span>
+                            <span class="col-amount">शिल्लक रक्कम</span>
+                        </li>
+                        ${data.map(flat => `
+                        <li>
+                            <span class="col-flat">${flat['फ्लॅट आयडी']}</span>
+                            <span class="col-buyer">${flat['खरेदीदाराचे नाव'] || '-'}</span>
+                            <span class="col-amount">${formatToLakhs(flat['एकूण भरलेली रक्कम'])}</span>
+                            <span class="col-amount">${formatToLakhs(flat['शिल्लक रक्कम'])}</span>
+                        </li>`).join('')}`;
                 }
 
                 modalList.innerHTML = data.length > 0 ? modalHTML : '<li><span>माहिती उपलब्ध नाही</span></li>';
@@ -472,17 +492,28 @@
 
             function hideModal() { modal.style.display = 'none'; }
             
+            // --- UPDATED: Click functionality restored for ALL cards ---
             kpiCards.forEach(card => card.addEventListener('click', () => {
                 const filter = card.dataset.filter;
                 const title = card.dataset.title;
                 let filteredData = [];
 
-                if (['stamp-duty', 'registry', 'bank-exp'].includes(filter)) {
+                if (filter === 'all') {
+                    filteredData = allFlatsData;
+                } else if (filter === 'sold') {
+                    filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
+                } else if (filter === 'available') {
+                    filteredData = allFlatsData.filter(f => f['स्थिती'] !== 'विक्री झाली');
+                } else if (filter === 'collected-positive') {
+                    filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
+                } else if (filter === 'pending-positive') {
+                    filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0 && f['स्थिती'] === 'विक्री झाली');
+                } else if (['stamp-duty', 'registry', 'bank-exp'].includes(filter)) {
                     const key = filter === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : filter === 'registry' ? 'रजिस्ट्री खर्च' : 'बँक खर्च';
                     filteredData = allFlatsData.filter(f => f[key] > 0);
-                    showModal(title, filteredData, filter);
                 }
-                // Add other filter logic here if needed, otherwise this modal is mainly for expenses now.
+                
+                showModal(title, filteredData, filter);
             }));
 
             modalCloseBtn.addEventListener('click', hideModal);
@@ -496,7 +527,6 @@
                 renderTable(allFlatsData);
             });
             
-            // Helper to get CSS variables
             const varCSS = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
             fetchAndProcessData();
