@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>विक्री डेटा एंट्री फॉर्म</title>
+    <title>विक्री डेटा एंट्री फॉर्म (Marunji Dashboard)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
         
@@ -152,21 +152,15 @@
             <h2>🏠 नवीन विक्री नोंदवा</h2>
             <form id="newSaleForm">
                 <input type="hidden" name="action" value="addNewSale">
+                <!-- Flat Details -->
                 <div class="form-group">
                     <label for="availableFlats">उपलब्ध फ्लॅट:</label>
                     <select id="availableFlats" name="flatId" required>
                         <option value="">लोड होत आहे...</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="basePrice">फ्लॅटची मूळ किंमत (₹):</label>
-                    <input type="text" id="basePrice" name="basePrice" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="finalRate">अंतिम किंमत (Final Rate) (₹):</label>
-                    <input type="number" id="finalRate" name="finalRate" min="1" required>
-                </div>
                 <hr>
+                <!-- Buyer and Agent Details -->
                 <div class="form-group">
                     <label for="buyerName">खरेदीदाराचे नाव:</label>
                     <input type="text" id="buyerName" name="buyerName" required>
@@ -175,18 +169,39 @@
                     <label for="buyerContact">खरेदीदाराचा संपर्क:</label>
                     <input type="tel" id="buyerContact" name="buyerContact" required>
                 </div>
-                 <div class="form-group">
+                <div class="form-group">
+                    <label for="agentName">विक्री करणारे एजेंटचे नांव:</label>
+                    <input type="text" id="agentName" name="agentName" required>
+                </div>
+                <div class="form-group">
                     <label for="saleDate">विक्रीची तारीख:</label>
                     <input type="date" id="saleDate" name="saleDate" required>
                 </div>
                 <hr>
+                <!-- Pricing and Expenses -->
                 <div class="form-group">
-                    <label for="registryExp">रजिस्ट्री खर्च (₹):</label>
-                    <input type="number" class="expense" id="registryExp" name="registryExp" value="0" min="0">
+                    <label for="basePrice">फ्लॅटची मूळ किंमत (₹):</label>
+                    <input type="text" id="basePrice" name="basePrice" readonly>
                 </div>
-                 <div class="form-group">
+                <div class="form-group">
+                    <label for="finalRate">अंतिम किंमत (Final Rate) (₹):</label>
+                    <input type="number" id="finalRate" name="finalRate" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="registryExp">रजिस्ट्री चार्जेस (₹):</label>
+                    <input type="number" class="expense" id="registryExp" name="registryExp" value="200000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="stampDuty">स्टॅम्प ड्युटी (8%) (₹):</label>
+                    <input type="number" id="stampDuty" name="stampDuty" readonly>
+                </div>
+                <div class="form-group">
                     <label for="legalExp">कायदेशीर खर्च (₹):</label>
                     <input type="number" class="expense" id="legalExp" name="legalExp" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="bankCharges">बँक खर्च (₹):</label>
+                    <input type="number" class="expense" id="bankCharges" name="bankCharges" value="0" min="0">
                 </div>
                  <div class="form-group">
                     <label for="otherExp">इतर खर्च (₹):</label>
@@ -194,6 +209,7 @@
                 </div>
                 <div class="total-price" id="totalPriceDisplay">एकूण किंमत: ₹0.00</div>
                 <hr>
+                <!-- Booking Amount -->
                 <div class="form-group">
                     <label for="bookingAmount">बुकिंग रक्कम (₹):</label>
                     <input type="number" id="bookingAmount" name="bookingAmount" min="1" required>
@@ -236,7 +252,7 @@
     <!-- JavaScript Code (Single Script Tag) -->
     <script>
         // ▼▼▼ तुमचा तैनात केलेला वेब ॲप URL इथे पेस्ट करा ▼▼▼
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxpSZ1IHpK1QFy7J6FVp7F5xWs7AvQwvd3Qt15S8qKkDhGV2GrhHxwT5zy8C9E7jMo/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwEHdicPbBtKh8YsZW2s5lVD19XutNdi7RFKfTuoC-fNeS93SOCq9pC6GKuMFbLLLI/exec'; // <-- तुमची URL इथे टाका
 
         // --- Element Selectors ---
         const availableFlatsSelect = document.getElementById('availableFlats');
@@ -245,6 +261,8 @@
         const installmentForm = document.getElementById('installmentForm');
         const basePriceInput = document.getElementById('basePrice');
         const finalRateInput = document.getElementById('finalRate');
+        const stampDutyInput = document.getElementById('stampDuty');
+        const registryExpInput = document.getElementById('registryExp');
         const totalPriceDisplay = document.getElementById('totalPriceDisplay');
         const totalPriceHiddenInput = document.getElementById('totalPrice');
         const expenseInputs = document.querySelectorAll('.expense');
@@ -256,11 +274,19 @@
 
         function updateTotalPrice() {
             const finalRate = parseFloat(finalRateInput.value) || 0;
-            const registryExp = parseFloat(document.getElementById('registryExp').value) || 0;
+            
+            // Calculate and set Stamp Duty (8% of final rate)
+            const stampDutyValue = finalRate * 0.08;
+            stampDutyInput.value = stampDutyValue.toFixed(2);
+
+            // Get all other expenses
+            const registryExp = parseFloat(registryExpInput.value) || 0;
             const legalExp = parseFloat(document.getElementById('legalExp').value) || 0;
+            const bankCharges = parseFloat(document.getElementById('bankCharges').value) || 0;
             const otherExp = parseFloat(document.getElementById('otherExp').value) || 0;
             
-            const total = finalRate + registryExp + legalExp + otherExp;
+            // Calculate total price including all expenses
+            const total = finalRate + registryExp + stampDutyValue + legalExp + bankCharges + otherExp;
             
             totalPriceDisplay.textContent = `एकूण किंमत: ${formatCurrency(total)}`;
             totalPriceHiddenInput.value = total;
@@ -306,20 +332,30 @@
             try {
                 const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
                 const resultText = await response.text();
-                if (!response.ok) throw new Error(resultText);
+                // Google Scripts sometimes returns HTML, so we check for a success keyword.
+                 if (!response.ok || !resultText.includes('यशस्वीरित्या')) {
+                    throw new Error(resultText);
+                }
 
                 messageDiv.textContent = resultText;
                 messageDiv.className = 'message success';
-                form.reset();
-                form.querySelector('input[type="date"]').valueAsDate = new Date();
+                
+                // Reset form with default values
                 if (form.id === 'newSaleForm') {
+                    form.reset();
+                    registryExpInput.value = '200000'; // Restore default registry
                     basePriceInput.value = '';
                     finalRateInput.value = '';
                     updateTotalPrice();
+                } else {
+                     form.reset();
                 }
+                
+                form.querySelector('input[type="date"]').valueAsDate = new Date();
                 fetchAndPopulateForms();
+
             } catch (error) {
-                messageDiv.textContent = error.message.replace('त्रुटी: ', '');
+                messageDiv.textContent = error.message.replace(/<[^>]*>?/gm, '').replace('त्रुटी: ', ''); // Clean HTML tags from error
                 messageDiv.className = 'message error';
             } finally {
                 submitBtn.disabled = false;
@@ -345,21 +381,23 @@
                     basePriceInput.value = '';
                     finalRateInput.value = '';
                 }
-                updateTotalPrice();
+                updateTotalPrice(); // Calculate total price on flat selection
             });
 
-            expenseInputs.forEach(input => input.addEventListener('input', updateTotalPrice));
-            finalRateInput.addEventListener('input', updateTotalPrice);
+            // Add event listeners to all manual expense fields and the final rate
+            [finalRateInput, ...expenseInputs].forEach(input => {
+                input.addEventListener('input', updateTotalPrice);
+            });
             
             newSaleForm.addEventListener('submit', (e) => handleFormSubmit(e, newSaleForm, document.getElementById('saleSubmitBtn'), document.getElementById('saleMessage')));
             installmentForm.addEventListener('submit', (e) => handleFormSubmit(e, installmentForm, document.getElementById('installmentSubmitBtn'), document.getElementById('installmentMessage')));
             
-            // Initial data load
+            // Initial data load and total price calculation
             fetchAndPopulateForms();
+            updateTotalPrice();
         }
 
         document.addEventListener('DOMContentLoaded', initialize);
     </script>
 </body>
-
 </html>
