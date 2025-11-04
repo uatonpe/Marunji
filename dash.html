@@ -13,17 +13,19 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         
         :root {
-            --bg-color: #f4f7fe;
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
-            --primary-text: #2c3e50;
+            --primary-text: #34495e;
             --secondary-text: #7f8c8d;
             --border-color: #e8ecf1;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --primary-color: #3498db;
-            --primary-color-dark: #2980b9;
-            --green: #2ecc71;
-            --orange: #f39c12;
-            --red: #e74c3c;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --primary-color: #4A90E2;
+            --primary-color-dark: #357ABD;
+            --green: #27AE60;
+            --orange: #F39C12;
+            --red: #E74C3C;
+            --purple: #8E44AD;
+            --blue: #2980B9;
             --font-family: 'Poppins', sans-serif;
         }
 
@@ -40,26 +42,28 @@
         .dashboard-container { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
         
         .header {
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-color-dark));
+            background: var(--card-bg);
             padding: 0 2rem;
             height: 70px;
             display: flex;
             align-items: center;
             box-shadow: var(--shadow);
             z-index: 100;
+            border-bottom: 3px solid var(--primary-color);
         }
 
         .header h1 {
             font-size: 1.8rem;
             font-weight: 600;
-            color: white;
+            color: var(--primary-text);
             display: flex;
             align-items: center;
             gap: 12px;
         }
+        .header h1 i { color: var(--primary-color); }
         
         .main-content { padding: 2rem; overflow-y: auto; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 
         .kpi-card {
             background: var(--card-bg);
@@ -71,12 +75,12 @@
             gap: 1.25rem;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 6px solid transparent;
+            border-left: 6px solid;
         }
         
-        .kpi-card:hover { transform: translateY(-6px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
-        .kpi-card .icon { font-size: 2.5rem; }
-        .kpi-card .info .value { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; line-height: 1.2; }
+        .kpi-card:hover { transform: translateY(-6px); box-shadow: 0 10px 20px rgba(0,0,0,0.07); }
+        .kpi-card .icon { font-size: 2.5rem; width: 60px; text-align: center; }
+        .kpi-card .info .value { font-size: clamp(1.5rem, 4vw, 1.8rem); font-weight: 700; line-height: 1.2; }
         .kpi-card .info .label { font-size: 0.9rem; color: var(--secondary-text); }
 
         .kpi-total { border-color: var(--primary-color); color: var(--primary-color); }
@@ -84,13 +88,15 @@
         .kpi-available { border-color: var(--orange); color: var(--orange); }
         .kpi-collected { border-color: var(--green); color: var(--green); }
         .kpi-pending { border-color: var(--red); color: var(--red); }
+        .kpi-stamp { border-color: var(--purple); color: var(--purple); }
+        .kpi-registry { border-color: var(--blue); color: var(--blue); }
+        .kpi-bank { border-color: var(--primary-color-dark); color: var(--primary-color-dark); }
         
-        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        
-        @media (min-width: 992px) { .charts-grid { grid-template-columns: 2fr 1fr; } }
-        @media (min-width: 1200px) { .charts-grid { grid-template-columns: 2fr 1fr 1fr; } }
+        .content-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (min-width: 992px) { .content-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { .content-grid { grid-template-columns: 2fr 1fr 1fr; } }
 
-        .chart-container, .building-view-container {
+        .card-container {
             background: var(--card-bg);
             padding: 1.5rem;
             border-radius: 12px;
@@ -99,7 +105,7 @@
             flex-direction: column;
             min-height: 420px;
         }
-        .chart-container h3, .building-view-container h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 600; }
+        .card-container h3 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 600; }
         .chart-wrapper { position: relative; flex-grow: 1; }
         
         #building-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; flex-grow: 1; padding: 10px; background-color: #f9fafb; border-radius: 8px; }
@@ -110,16 +116,16 @@
         .flat-block .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); padding: 8px 12px; background-color: #333; color: white; border-radius: 6px; font-size: 0.8rem; white-space: nowrap; transition: opacity 0.2s; pointer-events: none; }
         .flat-block:hover .tooltip { visibility: visible; opacity: 1; }
 
-        .table-container { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); }
+        .table-container { grid-column: 1 / -1; background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); }
         .table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
         .table-controls h3 { margin: 0; }
         .table-controls input { padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; max-width: 300px; font-size: 1rem; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-        thead th { background-color: #f7f7f7; font-weight: 600; cursor: pointer; user-select: none; position: sticky; top: 0; }
+        th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap;}
+        thead th { background-color: #f7f9fc; font-weight: 600; cursor: pointer; user-select: none; position: sticky; top: 0; }
         .sort-indicator { display: inline-block; margin-left: 5px; opacity: 0.6; }
-        tbody tr:hover { background-color: #f5f5f5; }
+        tbody tr:hover { background-color: #f5f9ff; }
         .status-badge { padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; display: inline-block; }
         .status-विक्री-झाली { background-color: var(--green); }
         .status-उपलब्ध { background-color: var(--orange); }
@@ -137,9 +143,10 @@
         .modal-list { list-style: none; padding: 0; margin: 0; }
         .modal-list li { display: flex; justify-content: space-between; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
         .modal-list li:last-child { border-bottom: none; }
-        .modal-list li span { flex-basis: 25%; text-align: left; }
-        .modal-list li span:first-child { font-weight: 600; }
-
+        .modal-list li span { text-align: left; }
+        .modal-list li span.modal-flat { flex: 1; font-weight: 600; }
+        .modal-list li span.modal-buyer { flex: 2; }
+        .modal-list li span.modal-amount { flex: 1.5; text-align: right; }
         @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     </style>
@@ -147,10 +154,7 @@
 <body>
 
     <div class="dashboard-container">
-        <header class="header">
-            <!-- *** MODIFIED: Title changed as requested *** -->
-            <h1><i class="fa-solid fa-city"></i> Shivmurthi Residency </h1>
-        </header>
+        <header class="header"><h1><i class="fa-solid fa-city"></i> Shivmurthi Residency</h1></header>
 
         <main class="main-content">
             <div id="loading" class="loading-overlay">
@@ -159,59 +163,44 @@
             </div>
             
             <section class="kpi-grid">
-                <div class="kpi-card kpi-total" data-filter="all" data-title="एकूण सर्व फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-building"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-flats">0</div>
-                        <div class="label">एकूण फ्लॅट्स</div>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-sold" data-filter="sold" data-title="विक्री झालेले फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-house-circle-check"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-sold-flats">0</div>
-                        <div class="label">विक्री झाली</div>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-available" data-filter="available" data-title="उपलब्ध फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-house-circle-xmark"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-available-flats">0</div>
-                        <div class="label">उपलब्ध फ्लॅट्स</div>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-collected" data-filter="collected-positive" data-title="जमा रक्कम असलेले फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-collected">₹0</div>
-                        <div class="label">एकूण जमा रक्कम</div>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-pending" data-filter="pending-positive" data-title="शिल्लक रक्कम असलेले फ्लॅट्स">
-                     <div class="icon"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <div class="info">
-                        <div class="value" id="kpi-total-pending">₹0</div>
-                        <div class="label">एकूण शिल्लक रक्कम</div>
-                    </div>
-                </div>
+                <!-- Row 1: Core Stats -->
+                <div class="kpi-card kpi-total" data-filter="all" data-title="एकूण सर्व फ्लॅट्स"><div class="icon"><i class="fa-solid fa-building"></i></div><div class="info"><div class="value" id="kpi-total-flats">0</div><div class="label">एकूण फ्लॅट्स</div></div></div>
+                <div class="kpi-card kpi-sold" data-filter="sold" data-title="विक्री झालेले फ्लॅट्स"><div class="icon"><i class="fa-solid fa-house-circle-check"></i></div><div class="info"><div class="value" id="kpi-sold-flats">0</div><div class="label">विक्री झाली</div></div></div>
+                <div class="kpi-card kpi-available" data-filter="available" data-title="उपलब्ध फ्लॅट्स"><div class="icon"><i class="fa-solid fa-house-circle-xmark"></i></div><div class="info"><div class="value" id="kpi-available-flats">0</div><div class="label">उपलब्ध</div></div></div>
+                <div class="kpi-card kpi-collected" data-filter="collected-positive" data-title="जमा रक्कम असलेले फ्लॅट्स"><div class="icon"><i class="fa-solid fa-wallet"></i></div><div class="info"><div class="value" id="kpi-total-collected">₹0</div><div class="label">एकूण जमा</div></div></div>
+                <div class="kpi-card kpi-pending" data-filter="pending-positive" data-title="शिल्लक रक्कम असलेले फ्लॅट्स"><div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="info"><div class="value" id="kpi-total-pending">₹0</div><div class="label">एकूण शिल्लक</div></div></div>
+                <!-- Row 2: Expense Stats -->
+                <div class="kpi-card kpi-stamp" data-filter="stamp-duty" data-title="जमा झालेली स्टॅम्प ड्युटी"><div class="icon"><i class="fa-solid fa-file-invoice-dollar"></i></div><div class="info"><div class="value" id="kpi-stamp-duty">₹0</div><div class="label">स्टॅम्प ड्युटी जमा</div></div></div>
+                <div class="kpi-card kpi-registry" data-filter="registry" data-title="जमा झालेले रजिस्ट्री चार्जेस"><div class="icon"><i class="fa-solid fa-gavel"></i></div><div class="info"><div class="value" id="kpi-registry">₹0</div><div class="label">रजिस्ट्री जमा</div></div></div>
+                <div class="kpi-card kpi-bank" data-filter="bank-exp" data-title="जमा झालेला बँक खर्च"><div class="icon"><i class="fa-solid fa-landmark"></i></div><div class="info"><div class="value" id="kpi-bank-exp">₹0</div><div class="label">बँक खर्च जमा</div></div></div>
             </section>
 
-            <section class="charts-grid">
-                <div class="building-view-container">
+            <section class="content-grid">
+                <div class="card-container">
                     <h3>बिल्डिंग स्टेटस व्ह्यू</h3>
                     <div id="building-view"></div>
                 </div>
-                <div class="chart-container">
+                <div class="card-container">
                     <h3>फ्लॅट स्थिती</h3>
                     <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
                 </div>
-                <div class="chart-container">
+                <div class="card-container">
                     <h3>रक्कम स्थिती (विक्री झालेल्या फ्लॅट्सची)</h3>
                     <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
                 </div>
             </section>
 
             <section class="table-container">
+                <h3>एजेंटनुसार कमिशन</h3>
+                <div class="table-wrapper">
+                    <table id="agent-commission-table">
+                        <thead><tr><th>एजेंटचे नाव</th><th>विकलेले एकूण फ्लॅट्स</th><th>एकूण कमिशन (₹50,000 प्रति फ्लॅट)</th></tr></thead>
+                        <tbody id="agent-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section class="table-container" style="margin-top: 1.5rem;">
                 <div class="table-controls">
                     <h3>सर्व फ्लॅट्सची माहिती</h3>
                     <input type="text" id="table-search" placeholder="फ्लॅट आयडी, खरेदीदार, स्थितीनुसार शोधा...">
@@ -241,6 +230,7 @@
     <script>
         const FLATS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=0&single=true&output=csv';
         const PAYMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=1815984816&single=true&output=csv';
+        const AGENT_COMMISSION_PER_FLAT = 50000;
 
         document.addEventListener('DOMContentLoaded', () => {
             let allFlatsData = [];
@@ -258,7 +248,7 @@
             const modalCloseBtn = document.getElementById('modal-close-btn');
 
             const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            const formatToCrores = (num) => {
+            const formatToLakhs = (num) => {
                 const number = Number(num);
                 if (isNaN(number)) return '₹0';
                 if (number >= 10000000) return `₹${(number / 10000000).toFixed(2)} Cr`;
@@ -282,23 +272,30 @@
                 showLoading(true);
                 try {
                     const [flats, payments] = await Promise.all([fetchData(FLATS_CSV_URL), fetchData(PAYMENTS_CSV_URL)]);
-                    const cleanNumber = (val) => Number(String(val).replace(/,/g, '')) || 0;
+                    const cleanNumber = (val) => Number(String(val).replace(/[^0-9.-]+/g, '')) || 0;
 
                     allFlatsData = flats.map(flat => {
                         const flatPayments = payments.filter(p => p['फ्लॅट आयडी'] === flat['फ्लॅट आयडी']);
                         const totalPaid = flatPayments.reduce((sum, p) => sum + cleanNumber(p['रक्कम']), 0);
-                        const finalPrice = cleanNumber(flat['अंतिम किंमत']) || cleanNumber(flat['किंमत']);
-                        const remainingBalance = finalPrice - totalPaid;
+                        const totalCost = cleanNumber(flat['एकूण किंमत']);
+                        const remainingBalance = totalCost - totalPaid;
 
                         return {
-                            ...flat, 'अंतिम किंमत': finalPrice, 'एकूण भरलेली रक्कम': totalPaid, 'शिल्लक रक्कम': remainingBalance,
+                            ...flat,
+                            'एकूण किंमत': totalCost,
+                            'अंतिम किंमत': cleanNumber(flat['अंतिम किंमत']),
+                            'एकूण भरलेली रक्कम': totalPaid,
+                            'शिल्लक रक्कम': remainingBalance,
+                            'स्टॅम्प ड्युटी': cleanNumber(flat['स्टॅम्प ड्युटी']),
+                            'रजिस्ट्री खर्च': cleanNumber(flat['रजिस्ट्री खर्च']),
+                            'बँक खर्च': cleanNumber(flat['बँक खर्च']),
                         };
                     });
                     
                     renderDashboard(allFlatsData);
                 } catch (error) {
                     console.error('Data fetching error:', error);
-                    loadingOverlay.innerHTML = `<span>Error: ${error.message}<br>Please check links.</span>`;
+                    loadingOverlay.innerHTML = `<span>Error: ${error.message}<br>Please check links and sheet headers.</span>`;
                 } finally {
                     setTimeout(() => showLoading(false), 300);
                 }
@@ -308,115 +305,66 @@
                 renderKPIs(data);
                 renderCharts(data);
                 renderBuildingView(data);
+                renderAgentCommissionTable(data);
                 renderTable(data); 
             }
 
             function renderKPIs(data) {
-                const totalFlats = data.length;
                 const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
+                
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
+                const totalStampDuty = soldFlats.reduce((sum, f) => sum + f['स्टॅम्प ड्युटी'], 0);
+                const totalRegistry = soldFlats.reduce((sum, f) => sum + f['रजिस्ट्री खर्च'], 0);
+                const totalBankExp = soldFlats.reduce((sum, f) => sum + f['बँक खर्च'], 0);
 
-                document.getElementById('kpi-total-flats').textContent = totalFlats;
+                document.getElementById('kpi-total-flats').textContent = data.length;
                 document.getElementById('kpi-sold-flats').textContent = soldFlats.length;
-                document.getElementById('kpi-available-flats').textContent = totalFlats - soldFlats.length;
-                document.getElementById('kpi-total-collected').textContent = formatToCrores(totalCollected);
-                document.getElementById('kpi-total-pending').textContent = formatToCrores(totalPending);
+                document.getElementById('kpi-available-flats').textContent = data.length - soldFlats.length;
+                document.getElementById('kpi-total-collected').textContent = formatToLakhs(totalCollected);
+                document.getElementById('kpi-total-pending').textContent = formatToLakhs(totalPending);
+                document.getElementById('kpi-stamp-duty').textContent = formatToLakhs(totalStampDuty);
+                document.getElementById('kpi-registry').textContent = formatToLakhs(totalRegistry);
+                document.getElementById('kpi-bank-exp').textContent = formatToLakhs(totalBankExp);
             }
 
             function renderCharts(data) {
+                // Existing chart functions remain the same
                 renderFlatStatusChart(data);
                 renderPaymentStatusChart(data);
             }
-
+            
             function renderFlatStatusChart(data) {
                 if (chartInstances.status) chartInstances.status.destroy();
-                
                 const statusCounts = data.reduce((acc, f) => {
-                    const status = f['स्थिती'] === 'विक्री झाली' ? 'विक्री झाली' : 'उपलब्ध';
-                    acc[status] = (acc[status] || 0) + 1;
+                    acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
                     return acc;
                 }, {});
                 
-                const colorMap = { 'विक्री झाली': '#2ecc71', 'उपलब्ध': '#f39c12' };
-                const chartLabels = [], chartData = [], chartColors = [];
-
-                for (const status in statusCounts) {
-                    if (statusCounts[status] > 0) {
-                        chartLabels.push(status);
-                        chartData.push(statusCounts[status]);
-                        chartColors.push(colorMap[status] || '#bdc3c7');
-                    }
-                }
+                const labels = Object.keys(statusCounts);
+                const chartData = Object.values(statusCounts);
                 
-                if (chartData.length === 0) return;
-
-                const centerTextPlugin = {
-                    id: 'centerText',
-                    beforeDraw: (chart) => {
-                        const { ctx, width, height } = chart;
-                        ctx.save();
-                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.font = `bold 32px ${getComputedStyle(document.body).fontFamily}`;
-                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary-text');
-                        ctx.fillText(total, width / 2, height / 2 - 10);
-                        ctx.font = `500 14px ${getComputedStyle(document.body).fontFamily}`;
-                        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text');
-                        ctx.fillText('एकूण फ्लॅट्स', width / 2, height / 2 + 15);
-                        ctx.restore();
-                    }
-                };
-
                 chartInstances.status = new Chart('status-chart', {
                     type: 'doughnut', 
-                    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] }, 
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'top' } } },
-                    plugins: [centerTextPlugin]
+                    data: { labels, datasets: [{ data: chartData, backgroundColor: [varCSS('--green'), varCSS('--orange')], borderColor: '#ffffff', borderWidth: 4 }] }, 
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'top' } } }
                 });
             }
 
             function renderPaymentStatusChart(data) {
                 if (chartInstances.payment) chartInstances.payment.destroy();
-
                 const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
                 const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
                 const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
-                
                 if (totalCollected <= 0 && totalPending <= 0) return;
 
                 chartInstances.payment = new Chart('payment-status-chart', {
                     type: 'pie',
                     data: {
                         labels: ['एकूण जमा रक्कम', 'एकूण शिल्लक रक्कम'],
-                        datasets: [{
-                            data: [totalCollected, totalPending],
-                            backgroundColor: [ '#2ecc71', '#e74c3c' ],
-                            borderColor: '#ffffff',
-                            borderWidth: 4,
-                            hoverOffset: 8
-                        }]
+                        datasets: [{ data: [totalCollected, totalPending], backgroundColor: [varCSS('--green'), varCSS('--red')], borderColor: '#ffffff', borderWidth: 4 }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) label += ': ';
-                                        if (context.parsed !== null) {
-                                            label += formatToCrores(context.parsed);
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: c => `${c.label}: ${formatToLakhs(c.parsed)}` } } } }
                 });
             }
 
@@ -424,128 +372,117 @@
                 const container = document.getElementById('building-view');
                 container.innerHTML = '';
                 const sortedData = [...data].sort((a,b) => String(a['फ्लॅट आयडी']).localeCompare(String(b['फ्लॅट आयडी']), undefined, {numeric: true}));
-
                 sortedData.forEach(flat => {
                     const block = document.createElement('div');
-                    block.className = 'flat-block';
-                    const isSold = flat['स्थिती'] === 'विक्री झाली';
-                    block.classList.add(isSold ? 'status-sold' : 'status-available');
+                    block.className = `flat-block status-${flat['स्थिती'] === 'विक्री झाली' ? 'sold' : 'available'}`;
                     block.textContent = flat['फ्लॅट आयडी'];
-
-                    const tooltip = document.createElement('span');
-                    tooltip.className = 'tooltip';
-                    const buyer = flat['खरेदीदाराचे नाव'] || 'N/A';
-                    tooltip.textContent = `खरेदीदार: ${buyer} | किंमत: ${formatToCrores(flat['अंतिम किंमत'])}`;
-                    block.appendChild(tooltip);
-
+                    block.innerHTML += `<span class="tooltip">खरेदीदार: ${flat['खरेदीदाराचे नाव'] || 'N/A'} | किंमत: ${formatToLakhs(flat['एकूण किंमत'])}</span>`;
                     container.appendChild(block);
                 });
             }
 
+            function renderAgentCommissionTable(data) {
+                const agentData = data.filter(f => f['स्थिती'] === 'विक्री झाली' && f['एजेंटचे नांव'])
+                    .reduce((acc, flat) => {
+                        const agentName = flat['एजेंटचे नांव'].trim();
+                        if (!acc[agentName]) {
+                            acc[agentName] = { count: 0, commission: 0 };
+                        }
+                        acc[agentName].count++;
+                        acc[agentName].commission = acc[agentName].count * AGENT_COMMISSION_PER_FLAT;
+                        return acc;
+                    }, {});
+
+                const tableBody = document.getElementById('agent-table-body');
+                const sortedAgents = Object.entries(agentData).sort((a, b) => b[1].commission - a[1].commission);
+                
+                tableBody.innerHTML = sortedAgents.map(([name, data]) => `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${data.count}</td>
+                        <td>${formatCurrency(data.commission)}</td>
+                    </tr>
+                `).join('');
+            }
+
             function renderTable(data) {
-                const headers = ['फ्लॅट आयडी', 'स्थिती', 'खरेदीदाराचे नाव', 'अंतिम किंमत', 'एकूण भरलेली रक्कम', 'शिल्लक रक्कम'];
+                const headers = ['फ्लॅट आयडी', 'स्थिती', 'खरेदीदाराचे नाव', 'एकूण किंमत', 'एकूण भरलेली रक्कम', 'शिल्लक रक्कम'];
                 if (tableHead.innerHTML === '') {
                     tableHead.innerHTML = `<tr>${headers.map(h => `<th data-key="${h}">${h} <span class="sort-indicator"></span></th>`).join('')}</tr>`;
                 }
 
-                let filteredData = data;
                 const searchTerm = tableSearchInput.value.toLowerCase();
-                if (searchTerm) {
-                    filteredData = filteredData.filter(flat => Object.values(flat).some(val => String(val).toLowerCase().includes(searchTerm)));
-                }
+                const filteredData = searchTerm ? data.filter(flat => Object.values(flat).some(val => String(val).toLowerCase().includes(searchTerm))) : data;
 
                 const sortedData = [...filteredData].sort((a, b) => {
                     const valA = a[currentSort.key], valB = b[currentSort.key];
-                    if (typeof valA === 'number' && typeof valB === 'number') return currentSort.asc ? valA - valB : valB - valA;
-                    return currentSort.asc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                    const cleanA = typeof valA === 'string' ? valA.trim() : valA;
+                    const cleanB = typeof valB === 'string' ? valB.trim() : valB;
+                    if (!isNaN(cleanA) && !isNaN(cleanB)) return currentSort.asc ? cleanA - cleanB : cleanB - cleanA;
+                    return currentSort.asc ? String(cleanA).localeCompare(String(cleanB)) : String(cleanB).localeCompare(String(cleanA));
                 });
                 
-                // *** MODIFIED: Table row generation updated as per request ***
-                tableBody.innerHTML = sortedData.map(flat => {
-                    const isSold = flat['स्थिती'] === 'विक्री झाली';
-                    const statusText = isSold ? 'विक्री झाली' : 'उपलब्ध';
-                    const buyerText = isSold ? (flat['खरेदीदाराचे नाव'] || '-') : 'Available for Sale';
-
-                    return `
-                        <tr>
-                            <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
-                            <td><span class="status-badge status-${statusText.replace(/\s+/g, '-')}">${statusText}</span></td>
-                            <td>${buyerText}</td>
-                            <td>${formatCurrency(flat['अंतिम किंमत'])}</td>
-                            <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
-                            <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
-                        </tr>
-                    `;
-                }).join('');
+                tableBody.innerHTML = sortedData.map(flat => `
+                    <tr>
+                        <td><strong>${flat['फ्लॅट आयडी'] || '-'}</strong></td>
+                        <td><span class="status-badge status-${flat['स्थिती'].replace(/\s+/g, '-')}">${flat['स्थिती']}</span></td>
+                        <td>${flat['खरेदीदाराचे नाव'] || '-'}</td>
+                        <td>${formatCurrency(flat['एकूण किंमत'])}</td>
+                        <td>${formatCurrency(flat['एकूण भरलेली रक्कम'])}</td>
+                        <td>${formatCurrency(flat['शिल्लक रक्कम'])}</td>
+                    </tr>
+                `).join('');
                 
                 document.querySelectorAll('#table-head th .sort-indicator').forEach(span => span.textContent = '');
                 const activeTh = document.querySelector(`#table-head th[data-key="${currentSort.key}"]`);
                 if (activeTh) activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
             }
             
-            // *** MODIFIED: Modal function updated to show different content based on filter ***
             function showModal(title, data, filter) {
                 modalTitle.textContent = title;
                 let modalHTML = '';
+                let amountKey = '';
+                let amountHeader = 'रक्कम';
 
-                if (filter === 'available') {
-                    modalHTML += `
+                if (filter === 'stamp-duty') { amountKey = 'स्टॅम्प ड्युटी'; amountHeader = 'स्टॅम्प ड्युटी'; }
+                else if (filter === 'registry') { amountKey = 'रजिस्ट्री खर्च'; amountHeader = 'रजिस्ट्री खर्च'; }
+                else if (filter === 'bank-exp') { amountKey = 'बँक खर्च'; amountHeader = 'बँक खर्च'; }
+                
+                if (amountKey) {
+                    modalHTML = `
                         <li style="font-weight: bold; background-color: #f7f7f7;">
-                            <span style="flex-basis: 50%;">फ्लॅट आयडी</span>
-                            <span style="flex-basis: 50%;">किंमत</span>
-                        </li>`;
-                    modalHTML += data.map(flat => `
-                        <li>
-                            <span style="flex-basis: 50%;">${flat['फ्लॅट आयडी']}</span>
-                            <span style="flex-basis: 50%;">${formatCurrency(flat['अंतिम किंमत'])}</span>
+                            <span class="modal-flat">फ्लॅट आयडी</span>
+                            <span class="modal-buyer">खरेदीदार</span>
+                            <span class="modal-amount">${amountHeader}</span>
                         </li>
-                    `).join('');
+                        ${data.map(flat => `
+                        <li>
+                            <span class="modal-flat">${flat['फ्लॅट आयडी']}</span>
+                            <span class="modal-buyer">${flat['खरेदीदाराचे नाव'] || '-'}</span>
+                            <span class="modal-amount">${formatCurrency(flat[amountKey])}</span>
+                        </li>`).join('')}`;
                 } else {
-                     modalHTML += `
-                        <li style="font-weight: bold; background-color: #f7f7f7;">
-                            <span>फ्लॅट आयडी</span>
-                            <span>खरेदीदार</span>
-                            <span>जमा रक्कम</span>
-                            <span>शिल्लक रक्कम</span>
-                        </li>`;
-                    modalHTML += data.map(flat => `
-                        <li>
-                            <span>${flat['फ्लॅट आयडी']}</span>
-                            <span>${flat['खरेदीदाराचे नाव'] || '-'}</span>
-                            <span>${formatToCrores(flat['एकूण भरलेली रक्कम'])}</span>
-                            <span>${formatToCrores(flat['शिल्लक रक्कम'])}</span>
-                        </li>
-                    `).join('');
+                    // Fallback for other filters
+                    modalHTML = data.map(flat => `<li><span>${flat['फ्लॅट आयडी']}</span><span>${flat['खरेदीदाराचे नाव'] || '-'}</span><span>${formatToLakhs(flat['शिल्लक रक्कम'])}</span></li>`).join('');
                 }
 
-                modalList.innerHTML = modalHTML;
-                if (data.length === 0) {
-                    modalList.innerHTML = '<li><span>माहिती उपलब्ध नाही</span></li>';
-                }
+                modalList.innerHTML = data.length > 0 ? modalHTML : '<li><span>माहिती उपलब्ध नाही</span></li>';
                 modal.style.display = 'flex';
             }
 
             function hideModal() { modal.style.display = 'none'; }
             
-            // *** MODIFIED: KPI card click listener updated ***
             kpiCards.forEach(card => card.addEventListener('click', () => {
                 const filter = card.dataset.filter;
                 const title = card.dataset.title;
                 let filteredData = [];
 
-                if (filter === 'all') {
-                    filteredData = allFlatsData;
-                } else if (filter === 'sold') {
-                    filteredData = allFlatsData.filter(f => f['स्थिती'] === 'विक्री झाली');
-                } else if (filter === 'available') {
-                    filteredData = allFlatsData.filter(f => f['स्थिती'] !== 'विक्री झाली');
-                } else if (filter === 'collected-positive') {
-                    filteredData = allFlatsData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
-                } else if (filter === 'pending-positive') {
-                    filteredData = allFlatsData.filter(f => f['शिल्लक रक्कम'] > 0);
+                if (['stamp-duty', 'registry', 'bank-exp'].includes(filter)) {
+                    const key = filter === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : filter === 'registry' ? 'रजिस्ट्री खर्च' : 'बँक खर्च';
+                    filteredData = allFlatsData.filter(f => f[key] > 0);
+                    showModal(title, filteredData, filter);
                 }
-                
-                showModal(title, filteredData, filter);
+                // Add other filter logic here if needed, otherwise this modal is mainly for expenses now.
             }));
 
             modalCloseBtn.addEventListener('click', hideModal);
@@ -558,10 +495,12 @@
                 currentSort.key = key;
                 renderTable(allFlatsData);
             });
+            
+            // Helper to get CSS variables
+            const varCSS = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
             fetchAndProcessData();
         });
     </script>
 </body>
 </html>
-
