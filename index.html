@@ -6,73 +6,288 @@
     <title>विक्री डेटा एंट्री फॉर्म (Marunji Dashboard)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-        :root{--primary-color:#007bff;--primary-dark:#0056b3;--success-bg:#d4edda;--success-text:#155724;--error-bg:#f8d7da;--error-text:#721c24;--light-gray:#f8f9fa;--border-color:#cdd3db}
-        body{font-family:'Poppins',sans-serif;background-color:#f0f4f8;margin:0;padding:20px;box-sizing:border-box}
-        main{display:grid;gap:30px;width:100%;max-width:1200px;margin:0 auto}
-        @media (min-width:992px){main{grid-template-columns:1fr 1fr}}
-        @media (max-width:991px){main{grid-template-columns:1fr}}
-        .container{background-color:white;padding:30px;border-radius:12px;box-shadow:0 8px 24px rgba(0,37,86,.1)}
-        h2{text-align:center;color:#1a3b5d;margin-top:0;margin-bottom:25px;border-bottom:2px solid var(--primary-color);padding-bottom:10px}
-        .form-group{margin-bottom:15px}
-        label{display:block;margin-bottom:8px;font-weight:500;color:#334e68}
-        input,select{width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;box-sizing:border-box;font-size:16px;transition:border-color .3s,box-shadow .3s}
-        input:focus,select:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(0,123,255,.1)}
-        input[readonly]{background-color:#e9ecef;cursor:not-allowed}
-        .total-price{font-size:1.2em;font-weight:600;color:#28a745;text-align:right;margin-top:10px;padding:10px;background-color:var(--light-gray);border-radius:8px}
-        button{width:100%;padding:14px;margin-top:10px;background:linear-gradient(90deg,var(--primary-color),var(--primary-dark));color:white;border:none;border-radius:8px;font-size:18px;font-weight:600;cursor:pointer;transition:transform .2s,background .3s}
-        button:hover:not(:disabled){transform:scale(1.02)}
-        button:disabled{background:#a0aec0;cursor:not-allowed}
-        .message{text-align:center;margin-top:20px;font-weight:bold;font-size:16px;white-space:pre-wrap;padding:15px;border-radius:8px;display:none}
-        .success{color:var(--success-text);background-color:var(--success-bg);border:1px solid #c3e6cb}
-        .error{color:var(--error-text);background-color:var(--error-bg);border:1px solid #f5c6cb}
-        hr{border:none;border-top:1px solid #eee;margin:20px 0}
-        #fileNameDisplay{margin-top:8px;font-style:italic;color:#555;display:block;}
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+            --error-bg: #f8d7da;
+            --error-text: #721c24;
+            --light-gray: #f8f9fa;
+            --border-color: #cdd3db;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        main {
+            display: grid;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        @media (min-width: 992px) {
+            main { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 991px) {
+            main { grid-template-columns: 1fr; }
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,37,86,.1);
+        }
+        h2 {
+            text-align: center;
+            color: #1a3b5d;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #334e68;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0,123,255,.1);
+        }
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        .total-price {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #28a745;
+            text-align: right;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+            border: 1px dashed #28a745;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .2s, background .3s;
+        }
+        button:hover:not(:disabled) {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            white-space: pre-wrap;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success {
+            color: var(--success-text);
+            background-color: var(--success-bg);
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            color: var(--error-text);
+            background-color: var(--error-bg);
+            border: 1px solid #f5c6cb;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+        #fileNameDisplay {
+            margin-top: 8px;
+            font-style: italic;
+            color: #555;
+            display: block;
+            font-size: 14px;
+        }
+        .payment-mode-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .payment-mode-container label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        .payment-mode-container input[type="radio"] {
+            width: auto;
+        }
     </style>
 </head>
 <body>
     <main>
-        <!-- नवीन विक्री नोंदणी फॉर्म ( यात बदल नाही ) -->
+        <!-- नवीन विक्री नोंदणी फॉर्म -->
         <div class="container">
             <h2>🏠 नवीन विक्री नोंदवा</h2>
             <form id="newSaleForm">
                 <input type="hidden" name="action" value="addNewSale">
-                <div class="form-group"><label for="availableFlats">उपलब्ध फ्लॅट:</label><select id="availableFlats" name="flatId" required><option value="">लोड होत आहे...</option></select></div><hr>
-                <div class="form-group"><label for="buyerName">खरेदीदाराचे नाव:</label><input type="text" id="buyerName" name="buyerName" required></div>
-                <div class="form-group"><label for="buyerContact">खरेदीदाराचा संपर्क:</label><input type="tel" id="buyerContact" name="buyerContact" required></div>
-                <div class="form-group"><label for="agentName">विक्री करणारे एजेंटचे नांव:</label><input type="text" id="agentName" name="agentName" required></div>
-                <div class="form-group"><label for="saleDate">विक्रीची तारीख:</label><input type="date" id="saleDate" name="saleDate" required></div><hr>
-                <div class="form-group"><label for="basePrice">फ्लॅटची मूळ किंमत (₹):</label><input type="text" id="basePrice" name="basePrice" readonly></div>
-                <div class="form-group"><label for="finalRate">अंतिम किंमत (₹):</label><input type="number" id="finalRate" name="finalRate" min="1" required></div>
-                <div class="form-group"><label for="registryExp">रजिस्ट्री चार्जेस (₹):</label><input type="number" class="expense" id="registryExp" name="registryExp" value="200000" min="0"></div>
-                <div class="form-group"><label for="stampDuty">स्टॅम्प ड्युटी (8%) (₹):</label><input type="number" id="stampDuty" name="stampDuty" readonly></div>
-                <div class="form-group"><label for="legalExp">कायदेशीर खर्च (₹):</label><input type="number" class="expense" id="legalExp" name="legalExp" value="0" min="0"></div>
-                <div class="form-group"><label for="bankCharges">बँक खर्च (₹):</label><input type="number" class="expense" id="bankCharges" name="bankCharges" value="0" min="0"></div>
-                <div class="form-group"><label for="otherExp">इतर खर्च (₹):</label><input type="number" class="expense" id="otherExp" name="otherExp" value="0" min="0"></div>
-                <div class="total-price" id="totalPriceDisplay">एकूण किंमत: ₹0.00</div><hr>
-                <div class="form-group"><label for="bookingAmount">बुकिंग रक्कम (₹):</label><input type="number" id="bookingAmount" name="bookingAmount" min="1" required></div>
-                <input type="hidden" id="totalPrice" name="totalPrice"><button type="submit" id="saleSubmitBtn">विक्री नोंदवा</button>
+                
+                <div class="form-group">
+                    <label for="availableFlats">उपलब्ध फ्लॅट:</label>
+                    <select id="availableFlats" name="flatId" required>
+                        <option value="">लोड होत आहे...</option>
+                    </select>
+                </div>
+                <hr>
+                
+                <div class="form-group">
+                    <label for="buyerName">खरेदीदाराचे नाव:</label>
+                    <input type="text" id="buyerName" name="buyerName" placeholder="खरेदीदाराचे पूर्ण नाव" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="buyerContact">खरेदीदाराचा संपर्क:</label>
+                    <input type="tel" id="buyerContact" name="buyerContact" placeholder="मोबाईल नंबर" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="agentName">विक्री करणारे एजेंटचे नांव:</label>
+                    <input type="text" id="agentName" name="agentName" placeholder="एजंटचे नाव" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleDate">विक्रीची तारीख:</label>
+                    <input type="date" id="saleDate" name="saleDate" required>
+                </div>
+                <hr>
+                
+                <div class="form-group">
+                    <label for="basePrice">फ्लॅटची मूळ किंमत (₹):</label>
+                    <input type="text" id="basePrice" name="basePrice" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="finalRate">अंतिम ठरलेली किंमत (₹):</label>
+                    <input type="number" id="finalRate" name="finalRate" placeholder="उदा. 2500000" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stampDuty">स्टॅम्प ड्युटी (₹):</label>
+                    <input type="number" id="stampDuty" name="stampDuty" placeholder="स्वतः भरा" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registryExp">रजिस्ट्री चार्जेस (₹):</label>
+                    <input type="number" class="expense-input" id="registryExp" name="registryExp" value="200000" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="legalExp">कायदेशीर खर्च (₹):</label>
+                    <input type="number" class="expense-input" id="legalExp" name="legalExp" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bankCharges">बँक खर्च (₹):</label>
+                    <input type="number" class="expense-input" id="bankCharges" name="bankCharges" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="otherExp">इतर खर्च (₹):</label>
+                    <input type="number" class="expense-input" id="otherExp" name="otherExp" value="0" min="0">
+                </div>
+                
+                <div class="total-price" id="totalPriceDisplay">एकूण विक्री किंमत: ₹0.00</div>
+                <hr>
+                
+                <div class="form-group">
+                    <label for="bookingAmount">बुकिंग रक्कम (₹):</label>
+                    <input type="number" id="bookingAmount" name="bookingAmount" placeholder="आज भरलेली रक्कम" min="1" required>
+                </div>
+                
+                <input type="hidden" id="totalPrice" name="totalPrice">
+                <button type="submit" id="saleSubmitBtn">विक्रीची नोंद करा</button>
             </form>
             <div id="saleMessage" class="message"></div>
         </div>
 
-        <!-- हप्ता जमा करण्याचा फॉर्म ( यात बदल केले आहेत ) -->
+        <!-- हप्ता जमा करण्याचा फॉर्म -->
         <div class="container">
             <h2>💰 हप्ता जमा करा</h2>
             <form id="installmentForm">
                 <input type="hidden" name="action" value="addInstallment">
-                <div class="form-group"><label for="soldFlats">विक्री झालेले फ्लॅट:</label><select id="soldFlats" name="flatId" required><option value="">लोड होत आहे...</option></select></div>
-                <div class="form-group"><label for="paymentDate">पेमेंटची तारीख:</label><input type="date" id="paymentDate" name="paymentDate" required></div>
-                <div class="form-group"><label for="paymentAmount">हप्त्याची रक्कम (₹):</label><input type="number" id="paymentAmount" name="paymentAmount" min="1" required></div>
                 
-                <!-- ▼▼▼ नवीन फाइल अपलोड फील्ड ▼▼▼ -->
                 <div class="form-group">
-                   <label for="screenshotFile">स्क्रीनशॉट अपलोड करा (ऐच्छिक):</label>
+                    <label for="soldFlats">विक्री झालेले फ्लॅट:</label>
+                    <select id="soldFlats" name="flatId" required>
+                        <option value="">लोड होत आहे...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentDate">पेमेंटची तारीख:</label>
+                    <input type="date" id="paymentDate" name="paymentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentAmount">हप्त्याची रक्कम (₹):</label>
+                    <input type="number" id="paymentAmount" name="paymentAmount" placeholder="रक्कम टाका" min="1" required>
+                </div>
+                
+                <!-- पेमेंट मोड (Cash/Online) -->
+                <div class="form-group">
+                    <label>पेमेंटचा प्रकार (Payment Mode):</label>
+                    <div class="payment-mode-container">
+                        <label><input type="radio" name="paymentMode" value="Online" checked> ऑनलाईन (Online)</label>
+                        <label><input type="radio" name="paymentMode" value="Cash"> रोख (Cash)</label>
+                        <label><input type="radio" name="paymentMode" value="Cheque"> चेक (Cheque)</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                   <label for="screenshotFile">पावती/स्क्रीनशॉट अपलोड (ऐच्छिक):</label>
                    <input type="file" id="screenshotFile" name="screenshotFile" accept="image/*">
                    <span id="fileNameDisplay"></span>
                 </div>
-                <!-- ▲▲▲ नवीन फाइल अपलोड फील्ड ▲▲▲ -->
                 
-                <div class="form-group"><label for="notes">टीप (ऐच्छिक):</label><input type="text" id="notes" name="notes"></div>
+                <div class="form-group">
+                    <label for="notes">टीप (काही माहिती असल्यास):</label>
+                    <input type="text" id="notes" name="notes" placeholder="उदा. दुसरा हप्ता, चेक नंबर इ.">
+                </div>
+                
                 <button type="submit" id="installmentSubmitBtn">हप्ता जमा करा</button>
             </form>
             <div id="installmentMessage" class="message"></div>
@@ -80,10 +295,10 @@
     </main>
     
     <script>
-        // ▼▼▼ तुमचा तैनात केलेला वेब ॲप URL इथे पेस्ट करा ▼▼▼
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzryb0o_HPvyyOO6LRa8jjnXJayLdu6Xz5kblfG0tQ3oHKCJVERGFzvcmVychRAhVk/exec'; // <-- तुमची नवीन URL इथे टाका
+        // ▼▼▼ तुमची Google Apps Script URL इथे टाका ▼▼▼
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzryb0o_HPvyyOO6LRa8jjnXJayLdu6Xz5kblfG0tQ3oHKCJVERGFzvcmVychRAhVk/exec'; 
 
-        // --- Element Selectors ---
+        // --- Elements ---
         const availableFlatsSelect = document.getElementById('availableFlats');
         const soldFlatsSelect = document.getElementById('soldFlats');
         const newSaleForm = document.getElementById('newSaleForm');
@@ -91,148 +306,154 @@
         const basePriceInput = document.getElementById('basePrice');
         const finalRateInput = document.getElementById('finalRate');
         const stampDutyInput = document.getElementById('stampDuty');
-        const registryExpInput = document.getElementById('registryExp');
         const totalPriceDisplay = document.getElementById('totalPriceDisplay');
-        const expenseInputs = document.querySelectorAll('.expense');
+        const expenseInputs = document.querySelectorAll('.expense-input');
         const screenshotFileInput = document.getElementById('screenshotFile');
         const fileNameDisplay = document.getElementById('fileNameDisplay');
+        
         let availableFlatsData = [];
         
         const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-        function updateTotalPrice() {
+        // एकूण किंमत मोजणे (आता स्टॅम्प ड्युटी मॅन्युअली मोजली जाईल)
+        function calculateTotal() {
             const finalRate = parseFloat(finalRateInput.value) || 0;
-            const stampDutyValue = finalRate * 0.08;
-            stampDutyInput.value = stampDutyValue.toFixed(2);
-            const registryExp = parseFloat(registryExpInput.value) || 0;
-            const legalExp = parseFloat(document.getElementById('legalExp').value) || 0;
-            const bankCharges = parseFloat(document.getElementById('bankCharges').value) || 0;
-            const otherExp = parseFloat(document.getElementById('otherExp').value) || 0;
-            const total = finalRate + registryExp + stampDutyValue + legalExp + bankCharges + otherExp;
-            totalPriceDisplay.textContent = `एकूण किंमत: ${formatCurrency(total)}`;
+            const stampDuty = parseFloat(stampDutyInput.value) || 0;
+            
+            let otherExpenses = 0;
+            expenseInputs.forEach(input => {
+                otherExpenses += parseFloat(input.value) || 0;
+            });
+            
+            const total = finalRate + stampDuty + otherExpenses;
+            totalPriceDisplay.textContent = `एकूण विक्री किंमत: ${formatCurrency(total)}`;
             document.getElementById('totalPrice').value = total;
         }
         
-        async function fetchAndPopulateForms() {
+        // डेटा लोड करणे
+        async function fetchInitialData() {
             try {
                 const response = await fetch(WEB_APP_URL);
-                if (!response.ok) throw new Error('Network response was not ok.');
                 const data = await response.json();
                 if (data.status === 'success') {
                     availableFlatsData = data.availableFlats;
-                    availableFlatsSelect.innerHTML = '<option value="">-- फ्लॅट निवडा --</option>';
-                    data.availableFlats.forEach(flat => availableFlatsSelect.add(new Option(`${flat.flatId} - (${formatCurrency(flat.price)})`, flat.flatId)));
-                    soldFlatsSelect.innerHTML = '<option value="">-- फ्लॅट निवडा --</option>';
-                    data.soldFlats.forEach(flatInfo => soldFlatsSelect.add(new Option(flatInfo, flatInfo)));
-                } else { throw new Error(data.message); }
+                    
+                    // उपलब्ध फ्लॅट्स ड्रॉपडाउन
+                    availableFlatsSelect.innerHTML = '<option value="">-- निवडा --</option>';
+                    data.availableFlats.forEach(flat => {
+                        availableFlatsSelect.add(new Option(`${flat.flatId} - (${formatCurrency(flat.price)})`, flat.flatId));
+                    });
+                    
+                    // विक्री झालेले फ्लॅट्स ड्रॉपडाउन
+                    soldFlatsSelect.innerHTML = '<option value="">-- निवडा --</option>';
+                    data.soldFlats.forEach(flat => {
+                        soldFlatsSelect.add(new Option(flat, flat));
+                    });
+                }
             } catch (error) {
-                console.error("Error loading flats:", error);
-                availableFlatsSelect.innerHTML = `<option value="">एरर!</option>`;
-                soldFlatsSelect.innerHTML = `<option value="">एरर!</option>`;
+                console.error("Error:", error);
+                alert("डेटा लोड करताना त्रुटी आली. कृपया इंटरनेट तपासा.");
             }
         }
         
-        // फाइलला Base64 मध्ये रूपांतरित करण्यासाठी फंक्शन
+        // इमेज प्रोसेसिंग
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => {
-                    // "data:image/jpeg;base64," हा भाग काढून टाकतो
-                    const base64Data = reader.result.split(',')[1];
-                    resolve(base64Data);
-                };
+                reader.onload = () => resolve(reader.result.split(',')[1]);
                 reader.onerror = error => reject(error);
             });
         }
 
+        // फॉर्म सबमिट करणे
         async function handleFormSubmit(event, form, submitBtn, messageDiv) {
             event.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.textContent = 'पाठवत आहे...';
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'प्रक्रिया सुरू आहे...';
             messageDiv.style.display = 'none';
             
-            // फॉर्ममधील सर्व फील्ड्सचे JSON ऑब्जेक्ट बनवतो
             const formData = new FormData(form);
             let payload = Object.fromEntries(formData.entries());
 
-            // जर हप्ता फॉर्म असेल आणि फाइल निवडली असेल, तर ती प्रोसेस करा
+            // फाइल असेल तर ॲड करा
             if (form.id === 'installmentForm' && screenshotFileInput.files.length > 0) {
                 const file = screenshotFileInput.files[0];
-                submitBtn.textContent = 'फाइल अपलोड करत आहे...';
                 try {
-                    const base64File = await getBase64(file);
-                    payload.fileData = base64File;
+                    payload.fileData = await getBase64(file);
                     payload.mimeType = file.type;
                     payload.fileName = file.name;
                 } catch(e) {
-                    messageDiv.textContent = 'फाइल वाचताना एरर आला.';
-                    messageDiv.className = 'message error';
-                    messageDiv.style.display = 'block';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'हप्ता जमा करा';
-                    return; // एरर आल्यास थांबवा
+                    alert("फाइल वाचता आली नाही.");
                 }
             }
 
             try {
-                submitBtn.textContent = 'डेटा पाठवत आहे...';
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, // Apps Script ला JSON समजण्यासाठी हे आवश्यक आहे
                     body: JSON.stringify(payload)
                 });
                 const resultText = await response.text();
-                if (!response.ok || !resultText.includes('यशस्वीरित्या')) {
+                
+                if (resultText.includes('यशस्वीरित्या')) {
+                    messageDiv.textContent = "✅ " + resultText;
+                    messageDiv.className = 'message success';
+                    form.reset();
+                    if(form.id === 'newSaleForm') {
+                        document.getElementById('registryExp').value = "200000";
+                        calculateTotal();
+                    }
+                    fileNameDisplay.textContent = "";
+                    fetchInitialData(); // ड्रॉपडाउन रिफ्रेश करा
+                } else {
                     throw new Error(resultText);
                 }
-
-                messageDiv.textContent = resultText;
-                messageDiv.className = 'message success';
-                
-                form.reset();
-                if (form.id === 'newSaleForm') {
-                    registryExpInput.value = '200000';
-                    updateTotalPrice();
-                } else {
-                    fileNameDisplay.textContent = ''; // फाइलचे नाव क्लियर करा
-                }
-                form.querySelector('input[type="date"]').valueAsDate = new Date();
-                fetchAndPopulateForms();
             } catch (error) {
-                messageDiv.textContent = error.message.replace(/<[^>]*>?/gm, '').replace('त्रुटी: ', '');
+                messageDiv.textContent = "❌ त्रुटी: " + error.message;
                 messageDiv.className = 'message error';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = form.id === 'newSaleForm' ? 'विक्री नोंदवा' : 'हप्ता जमा करा';
+                submitBtn.textContent = originalBtnText;
                 messageDiv.style.display = 'block';
+                window.scrollTo({ top: messageDiv.offsetTop - 100, behavior: 'smooth' });
             }
         }
 
-        function initialize() {
+        // सुरुवातीचे सेटिंग्ज
+        function init() {
             document.getElementById('saleDate').valueAsDate = new Date();
             document.getElementById('paymentDate').valueAsDate = new Date();
-            availableFlatsSelect.addEventListener('change', () => {
-                const selectedFlat = availableFlatsData.find(f => f.flatId === availableFlatsSelect.value);
-                basePriceInput.value = selectedFlat ? selectedFlat.price : '';
-                finalRateInput.value = selectedFlat ? selectedFlat.price : '';
-                updateTotalPrice();
-            });
-            [finalRateInput, ...expenseInputs].forEach(input => input.addEventListener('input', updateTotalPrice));
             
-            // निवडलेल्या फाइलचे नाव दाखवण्यासाठी
-            screenshotFileInput.addEventListener('change', () => {
-                fileNameDisplay.textContent = screenshotFileInput.files.length > 0 ? `निवडलेली फाइल: ${screenshotFileInput.files[0].name}` : '';
+            // फ्लॅट निवडल्यावर किंमत आपोआप येणे
+            availableFlatsSelect.addEventListener('change', () => {
+                const flat = availableFlatsData.find(f => f.flatId === availableFlatsSelect.value);
+                if (flat) {
+                    basePriceInput.value = flat.price;
+                    finalRateInput.value = flat.price;
+                    calculateTotal();
+                }
             });
 
+            // कॅल्क्युलेशन इव्हेंट्स
+            finalRateInput.addEventListener('input', calculateTotal);
+            stampDutyInput.addEventListener('input', calculateTotal);
+            expenseInputs.forEach(input => input.addEventListener('input', calculateTotal));
+            
+            // फाइल निवडल्यावर नाव दाखवणे
+            screenshotFileInput.addEventListener('change', () => {
+                fileNameDisplay.textContent = screenshotFileInput.files[0] ? `निवडलेली फाइल: ${screenshotFileInput.files[0].name}` : "";
+            });
+
+            // फॉर्म सबमिशन
             newSaleForm.addEventListener('submit', (e) => handleFormSubmit(e, newSaleForm, document.getElementById('saleSubmitBtn'), document.getElementById('saleMessage')));
             installmentForm.addEventListener('submit', (e) => handleFormSubmit(e, installmentForm, document.getElementById('installmentSubmitBtn'), document.getElementById('installmentMessage')));
             
-            fetchAndPopulateForms();
-            updateTotalPrice();
+            fetchInitialData();
+            calculateTotal();
         }
 
-        document.addEventListener('DOMContentLoaded', initialize);
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
