@@ -1,37 +1,47 @@
-<!-- START OF FILE Update January 18, 2026 -->
 <!DOCTYPE html>
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>शिवमुर्ती रेसिडेन्सी - रिअल इस्टेट सेल्स डॅशबोर्ड</title>
+    <title>शिवमुर्ती रेसिडेन्सी - सेल्स डॅशबोर्ड प्रो</title>
     
-    <!-- External Libraries -->
+    <!-- 
+        External Libraries:
+        - PapaParse: For CSV processing
+        - Chart.js: For data visualization
+        - FontAwesome: For high-quality icons
+    -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        /* 
+            CSS Variables for consistent branding 
+        */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
         :root {
-            --bg-color: #f0f4f8;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --primary-text: #34495e;
-            --secondary-text: #7f8c8d;
-            --border-color: #e8ecf1;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --primary-color: #4A90E2;
-            --primary-color-dark: #357ABD;
-            --green: #27AE60;
-            --orange: #F39C12;
-            --red: #E74C3C;
-            --purple: #8E44AD;
-            --blue: #2980B9;
+            --primary-text: #2c3e50;
+            --secondary-text: #95a5a6;
+            --border-color: #dcdde1;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            --primary-color: #3498db;
+            --primary-color-dark: #2980b9;
+            --green: #27ae60;
+            --orange: #f39c12;
+            --red: #e74c3c;
+            --purple: #9b59b6;
+            --dark-blue: #2c3e50;
             --font-family: 'Poppins', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+        }
 
         body {
             margin: 0;
@@ -42,162 +52,230 @@
             line-height: 1.6;
         }
 
+        /* 
+            Layout Structures 
+        */
         .dashboard-container { 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            grid-template-rows: auto 1fr; 
+            display: flex;
+            flex-direction: column;
             min-height: 100vh; 
         }
         
         /* Header Styling */
         .header {
-            background: var(--card-bg);
-            padding: 0 2rem;
-            height: 80px;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary-color-dark));
+            padding: 1.5rem 2rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow);
-            z-index: 100;
-            border-bottom: 4px solid var(--primary-color);
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            color: var(--primary-text);
+            margin: 0;
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin: 0;
+            gap: 12px;
+            letter-spacing: 0.5px;
         }
-        .header h1 i { color: var(--primary-color); }
-        
-        .main-content { padding: 2rem; overflow-y: auto; }
 
-        /* KPI Cards Styling */
+        .header .current-date {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .main-content { 
+            padding: 2rem; 
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 
+            KPI Cards Styling - Optimized for clarity
+        */
         .kpi-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
             gap: 1.5rem; 
-            margin-bottom: 2.5rem; 
+            margin-bottom: 3rem; 
         }
 
         .kpi-card {
             background: var(--card-bg);
             padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
             gap: 1.25rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 6px solid;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.03);
             position: relative;
             overflow: hidden;
         }
         
         .kpi-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1); 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1); 
+            border-color: var(--primary-color);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+            opacity: 0.7;
         }
 
         .kpi-card .icon { 
-            font-size: 2.5rem; 
-            width: 60px; 
-            height: 60px;
+            font-size: 2rem; 
+            min-width: 55px; 
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.03);
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover .icon {
+            background: currentColor;
+            color: white !important;
+        }
+
+        .kpi-card .info {
+            display: flex;
+            flex-direction: column;
         }
 
         .kpi-card .info .value { 
-            font-size: 1.8rem; 
+            font-size: 1.6rem; 
             font-weight: 700; 
-            line-height: 1.2; 
+            line-height: 1.1;
+            margin-bottom: 4px;
         }
 
         .kpi-card .info .label { 
-            font-size: 0.95rem; 
+            font-size: 0.85rem; 
             color: var(--secondary-text); 
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .kpi-total { border-color: var(--primary-color); color: var(--primary-color); }
-        .kpi-sold { border-color: var(--green); color: var(--green); }
-        .kpi-available { border-color: var(--orange); color: var(--orange); }
-        .kpi-collected { border-color: var(--green); color: var(--green); }
-        .kpi-pending { border-color: var(--red); color: var(--red); }
-        .kpi-stamp { border-color: var(--purple); color: var(--purple); }
-        .kpi-registry { border-color: var(--blue); color: var(--blue); }
-        .kpi-bank { border-color: var(--primary-color-dark); color: var(--primary-color-dark); }
+        /* KPI Specific Colors */
+        .kpi-total { color: var(--dark-blue); }
+        .kpi-sold { color: var(--green); }
+        .kpi-available { color: var(--orange); }
+        .kpi-collected { color: var(--green); }
+        .kpi-pending { color: var(--red); }
+        .kpi-stamp { color: var(--purple); }
+        .kpi-registry { color: var(--primary-color); }
+        .kpi-other-exp { color: #607d8b; }
         
-        /* Charts & Building Grid */
+        /* 
+            Content Grid - Charts and Building Layout 
+        */
         .content-grid { 
             display: grid; 
             grid-template-columns: 1fr; 
             gap: 2rem; 
-            margin-bottom: 2.5rem; 
+            margin-bottom: 3rem; 
         }
 
-        @media (min-width: 992px) { .content-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1200px) { .content-grid { grid-template-columns: 2fr 1fr 1fr; } }
+        @media (min-width: 1024px) { 
+            .content-grid { grid-template-columns: 1.5fr 1fr 1fr; } 
+        }
 
         .card-container {
             background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 1.8rem;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             min-height: 450px;
-            transition: all 0.3s ease;
         }
 
         .card-container h3 { 
             margin-top: 0; 
-            margin-bottom: 1.5rem; 
-            font-size: 1.25rem; 
+            margin-bottom: 1.8rem; 
+            font-size: 1.2rem; 
             font-weight: 600; 
-            color: var(--primary-text);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
+            color: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .chart-wrapper { position: relative; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .card-container h3 i { color: var(--primary-color); }
+
+        .chart-wrapper { 
+            position: relative; 
+            flex-grow: 1; 
+            width: 100%;
+            height: 100%;
+        }
         
+        /* Building View Map Styling */
         #building-view { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); 
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
             gap: 12px; 
-            flex-grow: 1; 
             padding: 15px; 
-            background-color: #f8f9fa; 
-            border-radius: 10px; 
-            border: 1px solid var(--border-color);
+            background-color: #fdfdfd; 
+            border-radius: 12px; 
+            border: 1px dashed var(--border-color);
         }
 
         .flat-block { 
             aspect-ratio: 1 / 1; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             display: flex; 
+            flex-direction: column;
             align-items: center; 
             justify-content: center; 
             font-weight: 700; 
             color: white; 
-            font-size: 0.9rem; 
+            font-size: 1rem; 
             cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: var(--transition); 
             position: relative; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
         }
 
-        .flat-block:hover { transform: scale(1.15); z-index: 10; box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
-        .flat-block.status-sold { background: linear-gradient(135deg, var(--green), #2ecc71); }
-        .flat-block.status-available { background: linear-gradient(135deg, var(--orange), #f1c40f); }
+        .flat-block:hover { 
+            transform: scale(1.1); 
+            z-index: 50; 
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15); 
+        }
+
+        .flat-block.status-sold { 
+            background: linear-gradient(135deg, var(--green), #2ecc71); 
+        }
         
+        .flat-block.status-available { 
+            background: linear-gradient(135deg, var(--orange), #f1c40f); 
+        }
+        
+        .flat-block .flat-label { font-size: 0.7rem; opacity: 0.8; font-weight: 400; }
+
         .flat-block .tooltip { 
             visibility: hidden; 
             opacity: 0; 
@@ -205,274 +283,354 @@
             bottom: 125%; 
             left: 50%; 
             transform: translateX(-50%); 
-            padding: 10px 15px; 
-            background-color: #2c3e50; 
+            padding: 12px 18px; 
+            background-color: rgba(44, 62, 80, 0.95); 
             color: white; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             font-size: 0.85rem; 
             white-space: nowrap; 
-            transition: all 0.3s; 
+            transition: var(--transition); 
             pointer-events: none; 
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
-        .flat-block:hover .tooltip { visibility: visible; opacity: 1; bottom: 110%; }
 
-        /* Tables Styling */
+        .flat-block:hover .tooltip { 
+            visibility: visible; 
+            opacity: 1; 
+            bottom: 110%; 
+        }
+
+        /* 
+            Inventory Table Styling 
+        */
         .table-container { 
-            grid-column: 1 / -1; 
             background: var(--card-bg); 
             padding: 2rem; 
-            border-radius: 12px; 
+            border-radius: 16px; 
             box-shadow: var(--shadow); 
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .table-controls { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 2rem; 
             flex-wrap: wrap; 
-            gap: 1rem; 
+            gap: 1.5rem; 
         }
 
-        .table-controls input { 
-            padding: 0.8rem 1.2rem; 
-            border: 2px solid var(--border-color); 
-            border-radius: 10px; 
+        .table-controls h3 { margin: 0; font-size: 1.4rem; }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text);
+        }
+
+        .search-box input { 
+            padding: 0.8rem 1rem 0.8rem 2.8rem; 
+            border: 2px solid #edf2f7; 
+            border-radius: 12px; 
             width: 100%; 
-            max-width: 350px; 
             font-size: 1rem; 
-            transition: border-color 0.3s;
+            transition: var(--transition);
+            background: #f8fafc;
         }
-        .table-controls input:focus { outline: none; border-color: var(--primary-color); }
 
-        .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+        .search-box input:focus { 
+            outline: none; 
+            border-color: var(--primary-color); 
+            background: white;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+        }
+
+        .table-wrapper { 
+            overflow-x: auto; 
+            border-radius: 12px; 
+            border: 1px solid #edf2f7; 
+        }
         
-        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; background: white; }
-        th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-        
-        thead th { 
-            background-color: #f8f9fa; 
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.95rem; 
+        }
+
+        th { 
+            background-color: #f8fafc; 
+            padding: 1.2rem; 
+            text-align: left; 
             font-weight: 600; 
-            color: var(--primary-text);
-            cursor: pointer; 
-            user-select: none; 
-            position: sticky; 
-            top: 0; 
+            color: var(--dark-blue);
+            border-bottom: 2px solid #edf2f7;
+            white-space: nowrap;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        thead th:hover { background-color: #edf2f7; }
-        
-        .sort-indicator { display: inline-block; margin-left: 8px; color: var(--primary-color); }
-        tbody tr:hover { background-color: #f1f7ff; }
+
+        th:hover { background-color: #f1f5f9; }
+
+        td { 
+            padding: 1.1rem 1.2rem; 
+            border-bottom: 1px solid #edf2f7; 
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background-color: #f9fbff; }
         
         .status-badge { 
-            padding: 0.4rem 0.8rem; 
-            border-radius: 20px; 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            color: white; 
-            display: inline-block; 
-            text-align: center;
-            min-width: 100px;
+            padding: 0.4rem 0.9rem; 
+            border-radius: 30px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            display: inline-block;
         }
-        .status-विक्री-झाली { background-color: var(--green); }
-        .status-उपलब्ध { background-color: var(--orange); }
+        
+        .status-विक्री-झाली { background-color: #dcfce7; color: #166534; }
+        .status-उपलब्ध { background-color: #fef9c3; color: #854d0e; }
 
-        /* Modal Styling */
+        /* 
+            Modal Overlay and Content 
+        */
         .modal-overlay { 
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.7); 
+            background: rgba(15, 23, 42, 0.7); 
             display: none; 
             justify-content: center; 
             align-items: center; 
-            z-index: 1002; 
-            padding: 1.5rem; 
-            backdrop-filter: blur(4px);
+            z-index: 2000; 
+            padding: 1rem; 
+            backdrop-filter: blur(6px);
+            animation: fadeIn 0.3s ease;
         }
 
         .modal-content { 
             background: white; 
-            border-radius: 15px; 
-            padding: 2rem; 
+            border-radius: 20px; 
+            padding: 2.5rem; 
             width: 100%; 
-            max-width: 900px; 
+            max-width: 1000px; 
             max-height: 85vh; 
             display: flex; 
             flex-direction: column; 
-            animation: slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
         }
 
         .modal-header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            border-bottom: 2px solid var(--border-color); 
-            padding-bottom: 1.2rem; 
-            margin-bottom: 1.2rem; 
+            margin-bottom: 2rem; 
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #edf2f7;
         }
 
-        .modal-header h2 { margin: 0; font-size: 1.6rem; color: var(--primary-color); }
-        .modal-close { font-size: 2rem; color: var(--secondary-text); cursor: pointer; background: none; border: none; transition: color 0.2s; }
-        .modal-close:hover { color: var(--red); }
+        .modal-header h2 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            color: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        .modal-body { overflow-y: auto; padding-right: 5px; }
-        .modal-list { list-style: none; padding: 0; margin: 0; }
-        .modal-list li { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 1rem; 
-            border-bottom: 1px solid var(--border-color); 
-            font-size: 1rem; 
+        .modal-close { 
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: var(--transition);
         }
-        .modal-list .modal-header-row { 
-            font-weight: 700; 
-            background-color: #f1f5f9; 
-            border-radius: 8px; 
-            position: sticky; 
-            top: 0; 
+
+        .modal-close:hover { 
+            background: var(--red); 
+            color: white; 
+            transform: rotate(90deg);
         }
-        
-        /* Loading Overlay */
+
+        .modal-body { 
+            overflow-y: auto; 
+            padding-right: 10px; 
+        }
+
+        /* Modal Table Styling */
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .modal-table th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .modal-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        /* 
+            Loading & Animations 
+        */
         .loading-overlay { 
             position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
+            top: 0; left: 0; width: 100%; height: 100%; 
             background: white; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 2000; 
-            flex-direction: column; 
-            gap: 1.5rem; 
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; 
+            z-index: 9999; 
         }
+
         .loader { 
-            border: 6px solid #f3f3f3; 
-            border-top: 6px solid var(--primary-color); 
+            width: 50px; height: 50px;
+            border: 5px solid #f3f3f3; 
+            border-top: 5px solid var(--primary-color); 
             border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
-            animation: spin 1s linear infinite; 
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Utility classes */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .text-right { text-align: right; }
         .fw-bold { font-weight: 700; }
-        .col-flat { flex-basis: 15%; }
-        .col-buyer { flex-basis: 35%; }
-        .col-amount { flex-basis: 25%; text-align: right; }
+        .text-green { color: var(--green); }
+        .text-red { color: var(--red); }
+        .text-primary { color: var(--primary-color); }
 
     </style>
 </head>
 <body>
 
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-overlay">
+        <div class="loader"></div>
+        <div style="font-weight: 600; color: var(--dark-blue);">माहिती संकलित होत आहे...</div>
+    </div>
+
     <div class="dashboard-container">
+        <!-- Main Header -->
         <header class="header">
-            <h1><i class="fa-solid fa-city"></i> Shivmurthi Residency - सेल्स डॅशबोर्ड</h1>
+            <h1><i class="fa-solid fa-house-chimney-crack"></i> शिवमुर्ती रेसिडेन्सी - स्मार्ट डॅशबोर्ड</h1>
+            <div class="current-date" id="date-display">१८ जानेवारी २०२६</div>
         </header>
 
         <main class="main-content">
-            <div id="loading" class="loading-overlay">
-                <div class="loader"></div>
-                <span style="font-size: 1.2rem; font-weight: 600;">डेटा लोड होत आहे, कृपया प्रतीक्षा करा...</span>
-            </div>
             
-            <!-- KPI Section -->
+            <!-- KPI Statistics Section -->
             <section class="kpi-grid">
-                <div class="kpi-card kpi-total" data-filter="all" data-title="एकूण सर्व फ्लॅट्स">
+                <div class="kpi-card kpi-total" data-filter="all" data-title="सर्व फ्लॅट्सची यादी">
                     <div class="icon"><i class="fa-solid fa-building"></i></div>
                     <div class="info"><div class="value" id="kpi-total-flats">0</div><div class="label">एकूण फ्लॅट्स</div></div>
                 </div>
-                <div class="kpi-card kpi-sold" data-filter="sold" data-title="विक्री झालेले फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-house-circle-check"></i></div>
+                <div class="kpi-card kpi-sold" data-filter="sold" data-title="विक्री झालेल्या फ्लॅट्सचे तपशील">
+                    <div class="icon"><i class="fa-solid fa-handshake-check"></i></div>
                     <div class="info"><div class="value" id="kpi-sold-flats">0</div><div class="label">विक्री झाली</div></div>
                 </div>
-                <div class="kpi-card kpi-available" data-filter="available" data-title="उपलब्ध फ्लॅट्स">
-                    <div class="icon"><i class="fa-solid fa-house-circle-xmark"></i></div>
+                <div class="kpi-card kpi-available" data-filter="available" data-title="उपलब्ध फ्लॅट्सची यादी">
+                    <div class="icon"><i class="fa-solid fa-door-open"></i></div>
                     <div class="info"><div class="value" id="kpi-available-flats">0</div><div class="label">उपलब्ध</div></div>
                 </div>
-                <div class="kpi-card kpi-collected" data-filter="collected-positive" data-title="एकूण जमा रक्कम">
-                    <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+                <div class="kpi-card kpi-collected" data-filter="collected" data-title="जमा रकमेचा सविस्तर रिपोर्ट">
+                    <div class="icon"><i class="fa-solid fa-sack-dollar"></i></div>
                     <div class="info"><div class="value" id="kpi-total-collected">₹0</div><div class="label">एकूण जमा</div></div>
                 </div>
-                <div class="kpi-card kpi-pending" data-filter="pending-positive" data-title="एकूण शिल्लक रक्कम">
-                    <div class="icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="kpi-card kpi-pending" data-filter="pending" data-title="शिल्लक रकमेचा सविस्तर रिपोर्ट">
+                    <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     <div class="info"><div class="value" id="kpi-total-pending">₹0</div><div class="label">एकूण शिल्लक</div></div>
                 </div>
-                <div class="kpi-card kpi-stamp" data-filter="stamp-duty" data-title="स्टॅम्प ड्युटी माहिती">
-                    <div class="icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                    <div class="info"><div class="value" id="kpi-stamp-duty">₹0</div><div class="label">स्टॅम्प ड्युटी जमा</div></div>
+                <div class="kpi-card kpi-stamp" data-filter="stamp" data-title="स्टॅम्प ड्युटी संकलन तपशील">
+                    <div class="icon"><i class="fa-solid fa-file-signature"></i></div>
+                    <div class="info"><div class="value" id="kpi-stamp-duty">₹0</div><div class="label">स्टॅम्प ड्युटी</div></div>
                 </div>
-                <div class="kpi-card kpi-registry" data-filter="registry" data-title="रजिस्ट्री चार्जेस माहिती">
+                <div class="kpi-card kpi-registry" data-filter="registry" data-title="रजिस्ट्री खर्च तपशील">
                     <div class="icon"><i class="fa-solid fa-gavel"></i></div>
-                    <div class="info"><div class="value" id="kpi-registry">₹0</div><div class="label">रजिस्ट्री जमा</div></div>
+                    <div class="info"><div class="value" id="kpi-registry">₹0</div><div class="label">रजिस्ट्री खर्च</div></div>
                 </div>
-                <div class="kpi-card kpi-bank" data-filter="bank-exp" data-title="बँक खर्च माहिती">
-                    <div class="icon"><i class="fa-solid fa-landmark"></i></div>
-                    <div class="info"><div class="value" id="kpi-bank-exp">₹0</div><div class="label">बँक खर्च जमा</div></div>
+                <div class="kpi-card kpi-other-exp" data-filter="others" data-title="इतर सर्व खर्च तपशील">
+                    <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+                    <div class="info"><div class="value" id="kpi-other-exp">₹0</div><div class="label">इतर एकूण खर्च</div></div>
                 </div>
             </section>
 
-            <!-- Visual Content Section -->
+            <!-- Visualization Grid -->
             <section class="content-grid">
+                <!-- Building Layout View -->
                 <div class="card-container">
-                    <h3>बिल्डिंग स्टेटस व्ह्यू (नकाशा)</h3>
+                    <h3><i class="fa-solid fa-layer-group"></i> बिल्डिंग स्ट्रक्चर व्ह्यू</h3>
                     <div id="building-view"></div>
                 </div>
+
+                <!-- Status Doughnut Chart -->
                 <div class="card-container">
-                    <h3>फ्लॅट विक्री स्थिती</h3>
+                    <h3><i class="fa-solid fa-chart-pie"></i> फ्लॅट विक्री स्थिती</h3>
                     <div class="chart-wrapper"><canvas id="status-chart"></canvas></div>
                 </div>
-                <div class="card-container">
-                    <h3>पेमेंट रिकव्हरी स्टेटस</h3>
-                    <div class="chart-wrapper"><canvas id="payment-status-chart"></canvas></div>
-                </div>
-            </section>
 
-            <!-- Agent Commission Table (Manual values from CSV) -->
-            <section class="table-container">
-                <h3>एजेंटनुसार कमिशन रिपोर्ट</h3>
-                <div class="table-wrapper">
-                    <table id="agent-commission-table">
-                        <thead>
-                            <tr>
-                                <th>एजेंटचे नाव</th>
-                                <th>विकलेले एकूण फ्लॅट्स</th>
-                                <th>एकूण कमिशन (शीटनुसार)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="agent-table-body">
-                            <!-- Data injected by JS -->
-                        </tbody>
-                    </table>
+                <!-- Payment Recovery Pie Chart -->
+                <div class="card-container">
+                    <h3><i class="fa-solid fa-chart-line"></i> पेमेंट रिकव्हरी स्टेटस</h3>
+                    <div class="chart-wrapper"><canvas id="payment-chart"></canvas></div>
                 </div>
             </section>
             
-            <!-- Main Inventory Table -->
+            <!-- Detailed Inventory Table -->
             <section class="table-container">
                 <div class="table-controls">
-                    <h3>सर्व फ्लॅट्सची सविस्तर माहिती</h3>
-                    <input type="text" id="table-search" placeholder="खरेदीदार, फ्लॅट किंवा स्थिती शोधा...">
+                    <h3><i class="fa-solid fa-list-check"></i> मास्टर इन्व्हेंटरी रिपोर्ट</h3>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="table-search" placeholder="फ्लॅट, नाव किंवा एजेंट शोधा...">
+                    </div>
                 </div>
                 <div class="table-wrapper">
-                    <table>
-                        <thead id="table-head">
-                            <!-- Headers injected by JS -->
+                    <table id="main-table">
+                        <thead>
+                            <tr>
+                                <th data-key="फ्लॅट आयडी">फ्लॅट आयडी <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="स्थिती">स्थिती <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="खरेदीदाराचे नाव">खरेदीदार <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="एकूण किंमत">एकूण किंमत <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="एकूण भरलेली रक्कम">जमा रक्कम <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="शिल्लक रक्कम">शिल्लक रक्कम <i class="fa-solid fa-sort"></i></th>
+                                <th data-key="एजेंटचे नांव">एजेंटचे नाव <i class="fa-solid fa-sort"></i></th>
+                            </tr>
                         </thead>
                         <tbody id="table-body">
-                            <!-- Rows injected by JS -->
+                            <!-- JS will inject rows here -->
                         </tbody>
                     </table>
                 </div>
@@ -480,349 +638,382 @@
         </main>
     </div>
 
-    <!-- Details Modal -->
+    <!-- Details Modal Window -->
     <div id="details-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">तपशील</h2>
-                <button id="modal-close-btn" class="modal-close">&times;</button>
+                <h2 id="modal-title">तपशील माहिती</h2>
+                <button id="modal-close-btn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="modal-body">
-                <ul id="modal-list-content" class="modal-list"></ul>
+            <div class="modal-body" id="modal-body-container">
+                <!-- Data Table will be injected here -->
             </div>
         </div>
     </div>
 
     <script>
-        // CSV URLs
-        const FLATS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=0&single=true&output=csv';
-        const PAYMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=1815984816&single=true&output=csv';
+        /**
+         * Real Estate Dashboard JavaScript Logic
+         * Handles CSV Fetching, Data Processing, Charting, and UI Interactions
+         */
+        
+        // 1. configuration & Data Source URLs
+        const CSV_CONFIG = {
+            flats: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=0&single=true&output=csv',
+            payments: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpEep4T1FNEoRc5CfDx6F9hh7sN7IvlH2Vgb9NndWEqWrqt0i_ZlE4-a9h5SXNwSezT6JoVWyKguYo/pub?gid=1815984816&single=true&output=csv'
+        };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            let allFlatsData = [];
-            let chartInstances = {};
-            let currentSort = { key: 'फ्लॅट आयडी', asc: true };
+        let dashboardData = [];
+        let charts = {};
+        let currentSort = { key: 'फ्लॅट आयडी', asc: true };
 
-            // DOM Elements
-            const loadingOverlay = document.getElementById('loading');
-            const kpiCards = document.querySelectorAll('.kpi-card');
-            const tableSearchInput = document.getElementById('table-search');
-            const tableHead = document.getElementById('table-head');
-            const tableBody = document.getElementById('table-body');
-            const modal = document.getElementById('details-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalList = document.getElementById('modal-list-content');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
+        // 2. Initial Setup on Page Load
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateDate();
+            await initializeDashboard();
+            setupEventListeners();
+        });
 
-            // Formatter Functions
-            const formatCurrency = (num) => {
-                const n = Number(num);
-                if (isNaN(n)) return '₹0';
-                return `₹${n.toLocaleString('en-IN')}`;
+        function updateDate() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('date-display').textContent = now.toLocaleDateString('mr-IN', options);
+        }
+
+        async function initializeDashboard() {
+            toggleLoading(true);
+            try {
+                const [flatsRaw, paymentsRaw] = await Promise.all([
+                    fetchCSV(CSV_CONFIG.flats),
+                    fetchCSV(CSV_CONFIG.payments)
+                ]);
+
+                processData(flatsRaw, paymentsRaw);
+                renderUI();
+            } catch (error) {
+                console.error("Dashboard Init Error:", error);
+                alert("डेटा लोड करताना त्रुटी आली. कृपया इंटरनेट तपासा.");
+            } finally {
+                setTimeout(() => toggleLoading(false), 800);
+            }
+        }
+
+        // 3. Data Processing Engine
+        function processData(flats, payments) {
+            const parseNum = (val) => {
+                if (!val) return 0;
+                return Number(String(val).replace(/[^0-9.-]+/g, '')) || 0;
             };
 
-            const formatToLakhs = (num) => {
-                const number = Number(num);
-                if (isNaN(number) || number === 0) return '₹0';
-                if (number >= 10000000) return `₹${(number / 10000000).toFixed(2)} Cr`;
-                if (number >= 100000) return `₹${(number / 100000).toFixed(2)} L`;
-                return formatCurrency(number);
-            };
-
-            const showLoading = (show) => { loadingOverlay.style.display = show ? 'flex' : 'none'; };
-
-            // Data Fetching
-            async function fetchData(url) {
-                return new Promise((resolve, reject) => {
-                    Papa.parse(url, {
-                        download: true, header: true, skipEmptyLines: true,
-                        complete: (results) => resolve(results.data),
-                        error: (error) => reject(error),
-                    });
-                });
-            }
-            
-            async function fetchAndProcessData() {
-                showLoading(true);
-                try {
-                    const [flats, payments] = await Promise.all([fetchData(FLATS_CSV_URL), fetchData(PAYMENTS_CSV_URL)]);
-                    
-                    const cleanNumber = (val) => {
-                        if (!val) return 0;
-                        return Number(String(val).replace(/[^0-9.-]+/g, '')) || 0;
-                    };
-
-                    allFlatsData = flats.map(flat => {
-                        const flatId = flat['फ्लॅट आयडी'];
-                        const flatPayments = payments.filter(p => p['फ्लॅट आयडी'] === flatId);
-                        
-                        const totalPaid = flatPayments.reduce((sum, p) => sum + cleanNumber(p['रक्कम']), 0);
-                        const totalCost = cleanNumber(flat['एकूण किंमत']);
-                        const remainingBalance = totalCost - totalPaid;
-
-                        return {
-                            ...flat,
-                            'एकूण किंमत': totalCost,
-                            'अंतिम किंमत': cleanNumber(flat['अंतिम किंमत']),
-                            'एकूण भरलेली रक्कम': totalPaid,
-                            'शिल्लक रक्कम': remainingBalance,
-                            'स्टॅम्प ड्युटी': cleanNumber(flat['स्टॅम्प ड्युटी']),
-                            'रजिस्ट्री खर्च': cleanNumber(flat['रजिस्ट्री खर्च']),
-                            'बँक खर्च': cleanNumber(flat['बँक खर्च']),
-                            'एजेंट कमिशन': cleanNumber(flat['एजेंट कमिशन']) // Sheet मधून कमिशन घेतोय
-                        };
-                    });
-                    
-                    renderDashboard(allFlatsData);
-                } catch (error) {
-                    console.error('Data error:', error);
-                    loadingOverlay.innerHTML = `<span>त्रुटी: ${error.message}. कृपया इंटरनेट कनेक्शन आणि शीट हेडर्स तपासा.</span>`;
-                } finally {
-                    setTimeout(() => showLoading(false), 500);
-                }
-            }
-            
-            function renderDashboard(data) {
-                renderKPIs(data);
-                renderCharts(data);
-                renderBuildingView(data);
-                renderAgentCommissionTable(data);
-                renderTable(data); 
-            }
-
-            function renderKPIs(data) {
-                const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
+            dashboardData = flats.map(flat => {
+                const fId = flat['फ्लॅट आयडी'];
+                // Calculate all payments for this specific flat
+                const flatPayments = payments.filter(p => p['फ्लॅट आयडी'] === fId);
+                const totalPaid = flatPayments.reduce((sum, p) => sum + parseNum(p['रक्कम']), 0);
                 
-                const totalCollected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
-                const totalPending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
-                const totalStamp = soldFlats.reduce((sum, f) => sum + f['स्टॅम्प ड्युटी'], 0);
-                const totalRegistry = soldFlats.reduce((sum, f) => sum + f['रजिस्ट्री खर्च'], 0);
-                const totalBank = soldFlats.reduce((sum, f) => sum + f['बँक खर्च'], 0);
+                const totalPrice = parseNum(flat['एकूण किंमत']);
+                const stamp = parseNum(flat['स्टॅम्प ड्युटी']);
+                const registry = parseNum(flat['रजिस्ट्री खर्च']);
+                const bank = parseNum(flat['बँक खर्च']);
 
-                document.getElementById('kpi-total-flats').textContent = data.length;
-                document.getElementById('kpi-sold-flats').textContent = soldFlats.length;
-                document.getElementById('kpi-available-flats').textContent = data.length - soldFlats.length;
-                document.getElementById('kpi-total-collected').textContent = formatToLakhs(totalCollected);
-                document.getElementById('kpi-total-pending').textContent = formatToLakhs(totalPending);
-                document.getElementById('kpi-stamp-duty').textContent = formatToLakhs(totalStamp);
-                document.getElementById('kpi-registry').textContent = formatToLakhs(totalRegistry);
-                document.getElementById('kpi-bank-exp').textContent = formatToLakhs(totalBank);
-            }
+                return {
+                    ...flat,
+                    'एकूण किंमत': totalPrice,
+                    'एकूण भरलेली रक्कम': totalPaid,
+                    'शिल्लक रक्कम': totalPrice - totalPaid,
+                    'स्टॅम्प ड्युटी': stamp,
+                    'रजिस्ट्री खर्च': registry,
+                    'बँक खर्च': bank,
+                    'इतर खर्च': stamp + registry + bank,
+                    'एजेंटचे नांव': flat['एजेंटचे नांव'] || 'Direct'
+                };
+            });
+        }
 
-            function renderCharts(data) {
-                const varCSS = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-
-                // 1. Status Chart
-                if (chartInstances.status) chartInstances.status.destroy();
-                const statusCounts = data.reduce((acc, f) => {
-                    acc[f['स्थिती']] = (acc[f['स्थिती']] || 0) + 1;
-                    return acc;
-                }, {});
-
-                chartInstances.status = new Chart('status-chart', {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(statusCounts),
-                        datasets: [{
-                            data: Object.values(statusCounts),
-                            backgroundColor: [varCSS('--green'), varCSS('--orange')],
-                            borderWidth: 5,
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
+        async function fetchCSV(url) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(url, {
+                    download: true, header: true, skipEmptyLines: true,
+                    complete: (res) => resolve(res.data),
+                    error: (err) => reject(err)
                 });
+            });
+        }
 
-                // 2. Payment Chart
-                if (chartInstances.payment) chartInstances.payment.destroy();
-                const soldFlats = data.filter(f => f['स्थिती'] === 'विक्री झाली');
-                const collected = soldFlats.reduce((sum, f) => sum + f['एकूण भरलेली रक्कम'], 0);
-                const pending = soldFlats.reduce((sum, f) => sum + f['शिल्लक रक्कम'], 0);
+        // 4. UI Rendering Functions
+        function renderUI() {
+            updateKPIs();
+            renderBuildingView();
+            renderCharts();
+            renderMainTable();
+        }
 
-                chartInstances.payment = new Chart('payment-status-chart', {
-                    type: 'pie',
-                    data: {
-                        labels: ['जमा रक्कम', 'शिल्लक रक्कम'],
-                        datasets: [{
-                            data: [collected, pending],
-                            backgroundColor: [varCSS('--green'), varCSS('--red')],
-                            borderWidth: 5
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { 
-                            legend: { position: 'bottom' },
-                            tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatToLakhs(ctx.raw)}` } }
+        function updateKPIs() {
+            const sold = dashboardData.filter(f => f['स्थिती'] === 'विक्री झाली');
+            
+            const stats = {
+                total: dashboardData.length,
+                soldCount: sold.length,
+                availCount: dashboardData.length - sold.length,
+                collected: sold.reduce((s, f) => s + f['एकूण भरलेली रक्कम'], 0),
+                pending: sold.reduce((s, f) => s + f['शिल्लक रक्कम'], 0),
+                stamp: sold.reduce((s, f) => s + f['स्टॅम्प ड्युटी'], 0),
+                registry: sold.reduce((s, f) => s + f['रजिस्ट्री खर्च'], 0),
+                others: sold.reduce((s, f) => s + f['इतर खर्च'], 0)
+            };
+
+            document.getElementById('kpi-total-flats').textContent = stats.total;
+            document.getElementById('kpi-sold-flats').textContent = stats.soldCount;
+            document.getElementById('kpi-available-flats').textContent = stats.availCount;
+            document.getElementById('kpi-total-collected').textContent = formatLakh(stats.collected);
+            document.getElementById('kpi-total-pending').textContent = formatLakh(stats.pending);
+            document.getElementById('kpi-stamp-duty').textContent = formatLakh(stats.stamp);
+            document.getElementById('kpi-registry').textContent = formatLakh(stats.registry);
+            document.getElementById('kpi-other-exp').textContent = formatLakh(stats.others);
+        }
+
+        function renderCharts() {
+            const soldCount = dashboardData.filter(f => f['स्थिती'] === 'विक्री झाली').length;
+            const availCount = dashboardData.length - soldCount;
+
+            // Status Chart
+            if (charts.status) charts.status.destroy();
+            charts.status = new Chart(document.getElementById('status-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['विक्री झाली', 'उपलब्ध'],
+                    datasets: [{
+                        data: [soldCount, availCount],
+                        backgroundColor: ['#27ae60', '#f39c12'],
+                        hoverOffset: 10,
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Payment Recovery Chart
+            const soldFlats = dashboardData.filter(f => f['स्थिती'] === 'विक्री झाली');
+            const collected = soldFlats.reduce((s, f) => s + f['एकूण भरलेली रक्कम'], 0);
+            const pending = soldFlats.reduce((s, f) => s + f['शिल्लक रक्कम'], 0);
+
+            if (charts.payment) charts.payment.destroy();
+            charts.payment = new Chart(document.getElementById('payment-chart'), {
+                type: 'pie',
+                data: {
+                    labels: ['जमा रक्कम', 'शिल्लक रक्कम'],
+                    datasets: [{
+                        data: [collected, pending],
+                        backgroundColor: ['#2ecc71', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.label}: ${formatLakh(ctx.raw)}`
+                            }
                         }
-                    }
-                });
-            }
+                    } 
+                }
+            });
+        }
 
-            function renderBuildingView(data) {
-                const container = document.getElementById('building-view');
-                container.innerHTML = '';
-                const sorted = [...data].sort((a,b) => String(a['फ्लॅट आयडी']).localeCompare(String(b['फ्लॅट आयडी']), undefined, {numeric: true}));
+        function renderBuildingView() {
+            const container = document.getElementById('building-view');
+            container.innerHTML = '';
+            
+            dashboardData.forEach(flat => {
+                const block = document.createElement('div');
+                const isSold = flat['स्थिती'] === 'विक्री झाली';
+                block.className = `flat-block status-${isSold ? 'sold' : 'available'}`;
                 
-                sorted.forEach(flat => {
-                    const block = document.createElement('div');
-                    const isSold = flat['स्थिती'] === 'विक्री झाली';
-                    block.className = `flat-block status-${isSold ? 'sold' : 'available'}`;
-                    block.textContent = flat['फ्लॅट आयडी'];
-                    
-                    const tooltip = document.createElement('span');
-                    tooltip.className = 'tooltip';
-                    tooltip.innerHTML = `
+                block.innerHTML = `
+                    <span class="flat-label">FLAT</span>
+                    ${flat['फ्लॅट आयडी']}
+                    <div class="tooltip">
                         <b>फ्लॅट: ${flat['फ्लॅट आयडी']}</b><br>
                         खरेदीदार: ${flat['खरेदीदाराचे नाव'] || '-'}<br>
-                        किंमत: ${formatToLakhs(flat['एकूण किंमत'])}<br>
-                        स्थिती: ${flat['स्थिती']}
-                    `;
-                    block.appendChild(tooltip);
-                    container.appendChild(block);
-                });
-            }
+                        किंमत: ${formatCurrency(flat['एकूण किंमत'])}<br>
+                        स्थिती: ${flat['स्थिती']}<br>
+                        एजेंट: ${flat['एजेंटचे नांव']}
+                    </div>
+                `;
+                container.appendChild(block);
+            });
+        }
 
-            function renderAgentCommissionTable(data) {
-                // कमिशन आता गुगल शीटमधील 'एजेंट कमिशन' कॉलममधून मोजले जाईल
-                const agentMap = data.filter(f => f['स्थिती'] === 'विक्री झाली' && f['एजेंटचे नांव'])
-                    .reduce((acc, flat) => {
-                        const name = flat['एजेंटचे नांव'].trim();
-                        if (!acc[name]) acc[name] = { count: 0, totalComm: 0 };
-                        acc[name].count++;
-                        acc[name].totalComm += flat['एजेंट कमिशन'];
-                        return acc;
-                    }, {});
+        function renderMainTable() {
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const body = document.getElementById('table-body');
+            
+            const filtered = dashboardData.filter(f => 
+                Object.values(f).some(v => String(v).toLowerCase().includes(search))
+            );
 
-                const body = document.getElementById('agent-table-body');
-                const sorted = Object.entries(agentMap).sort((a, b) => b[1].totalComm - a[1].totalComm);
+            const sorted = filtered.sort((a, b) => {
+                let v1 = a[currentSort.key], v2 = b[currentSort.key];
+                if (!isNaN(v1) && !isNaN(v2)) return currentSort.asc ? v1 - v2 : v2 - v1;
+                return currentSort.asc ? String(v1).localeCompare(String(v2)) : String(v2).localeCompare(String(v1));
+            });
+
+            body.innerHTML = sorted.map(f => `
+                <tr>
+                    <td class="fw-bold">${f['फ्लॅट आयडी']}</td>
+                    <td><span class="status-badge status-${f['स्थिती'].replace(/\s+/g, '-')}">${f['स्थिती']}</span></td>
+                    <td>${f['खरेदीदाराचे नाव'] || '-'}</td>
+                    <td class="fw-bold">${formatCurrency(f['एकूण किंमत'])}</td>
+                    <td class="text-green fw-bold">${formatCurrency(f['एकूण भरलेली रक्कम'])}</td>
+                    <td class="text-red fw-bold">${formatCurrency(f['शिल्लक रक्कम'])}</td>
+                    <td>${f['एजेंटचे नांव']}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 5. Modal Logic - Specific Requirements Implementation
+        function showDetailsModal(filterType, title) {
+            const modalTitle = document.getElementById('modal-title');
+            const bodyContainer = document.getElementById('modal-body-container');
+            modalTitle.textContent = title;
+
+            let filteredList = [];
+            let tableHTML = `<table class="modal-table"><thead><tr>`;
+
+            // Logic for column headers and filtering based on user request
+            if (filterType === 'sold') {
+                filteredList = dashboardData.filter(f => f['स्थिती'] === 'विक्री झाली');
+                tableHTML += `
+                    <th>फ्लॅट आयडी</th>
+                    <th>खरेदीदार</th>
+                    <th>एजेंटचे नाव</th>
+                    <th class="text-right">एकूण किंमत</th>
+                </tr></thead><tbody>`;
                 
-                body.innerHTML = sorted.length > 0 ? sorted.map(([name, stats]) => `
+                tableHTML += filteredList.map(f => `
                     <tr>
-                        <td class="fw-bold">${name}</td>
-                        <td>${stats.count}</td>
-                        <td class="fw-bold" style="color: var(--primary-color)">${formatCurrency(stats.totalComm)}</td>
-                    </tr>
-                `).join('') : '<tr><td colspan="3" style="text-align:center">माहिती उपलब्ध नाही</td></tr>';
-            }
-
-            function renderTable(data) {
-                // नवीन 'फ्लॅटची किंमत' आणि 'एजेंट कमिशन' कॉलम समाविष्ट केले आहेत
-                const columns = [
-                    { label: 'फ्लॅट आयडी', key: 'फ्लॅट आयडी' },
-                    { label: 'स्थिती', key: 'स्थिती' },
-                    { label: 'खरेदीदाराचे नाव', key: 'खरेदीदाराचे नाव' },
-                    { label: 'फ्लॅटची किंमत', key: 'एकूण किंमत' },
-                    { label: 'जमा रक्कम', key: 'एकूण भरलेली रक्कम' },
-                    { label: 'शिल्लक रक्कम', key: 'शिल्लक रक्कम' },
-                    { label: 'एजेंट कमिशन', key: 'एजेंट कमिशन' }
-                ];
-
-                if (tableHead.innerHTML === '') {
-                    tableHead.innerHTML = `<tr>${columns.map(c => `<th data-key="${c.key}">${c.label} <span class="sort-indicator"></span></th>`).join('')}</tr>`;
-                }
-
-                const search = tableSearchInput.value.toLowerCase();
-                const filtered = data.filter(f => 
-                    Object.values(f).some(v => String(v).toLowerCase().includes(search))
-                );
-
-                const sorted = filtered.sort((a, b) => {
-                    let v1 = a[currentSort.key], v2 = b[currentSort.key];
-                    if (!isNaN(v1) && !isNaN(v2)) return currentSort.asc ? v1 - v2 : v2 - v1;
-                    return currentSort.asc ? String(v1).localeCompare(String(v2)) : String(v2).localeCompare(String(v1));
-                });
-                
-                tableBody.innerHTML = sorted.map(f => `
-                    <tr>
-                        <td class="fw-bold">${f['फ्लॅट आयडी']}</td>
-                        <td><span class="status-badge status-${f['स्थिती'].replace(/\s+/g, '-')}">${f['स्थिती']}</span></td>
-                        <td>${f['खरेदीदाराचे नाव'] || '-'}</td>
-                        <td class="fw-bold">${formatCurrency(f['एकूण किंमत'])}</td>
-                        <td style="color: var(--green); font-weight:600">${formatCurrency(f['एकूण भरलेली रक्कम'])}</td>
-                        <td style="color: var(--red); font-weight:600">${formatCurrency(f['शिल्लक रक्कम'])}</td>
-                        <td>${formatCurrency(f['एजेंट कमिशन'])}</td>
+                        <td><b>${f['फ्लॅट आयडी']}</b></td>
+                        <td>${f['खरेदीदाराचे नाव']}</td>
+                        <td>${f['एजेंटचे नांव']}</td>
+                        <td class="text-right fw-bold text-primary">${formatCurrency(f['एकूण किंमत'])}</td>
                     </tr>
                 `).join('');
+
+            } else if (filterType === 'pending') {
+                filteredList = dashboardData.filter(f => f['स्थिती'] === 'विक्री झाली' && f['शिल्लक रक्कम'] > 0);
+                tableHTML += `
+                    <th>फ्लॅट आयडी</th>
+                    <th>खरेदीदार</th>
+                    <th class="text-right">एकूण किंमत</th>
+                    <th class="text-right">जमा रक्कम</th>
+                    <th class="text-right">शिल्लक रक्कम</th>
+                </tr></thead><tbody>`;
+
+                tableHTML += filteredList.map(f => `
+                    <tr>
+                        <td><b>${f['फ्लॅट आयडी']}</b></td>
+                        <td>${f['खरेदीदाराचे नाव']}</td>
+                        <td class="text-right">${formatCurrency(f['एकूण किंमत'])}</td>
+                        <td class="text-right text-green">${formatCurrency(f['एकूण भरलेली रक्कम'])}</td>
+                        <td class="text-right text-red fw-bold">${formatCurrency(f['शिल्लक रक्कम'])}</td>
+                    </tr>
+                `).join('');
+
+            } else if (['stamp', 'registry', 'others'].includes(filterType)) {
+                // Costs related modals with Agent Name as requested
+                const key = filterType === 'stamp' ? 'स्टॅम्प ड्युटी' : filterType === 'registry' ? 'रजिस्ट्री खर्च' : 'इतर खर्च';
+                filteredList = dashboardData.filter(f => f[key] > 0);
                 
-                // Update Sort Icons
-                document.querySelectorAll('th .sort-indicator').forEach(si => si.textContent = '');
-                const activeTh = document.querySelector(`th[data-key="${currentSort.key}"]`);
-                if (activeTh) activeTh.querySelector('.sort-indicator').textContent = currentSort.asc ? '▲' : '▼';
-            }
-            
-            // Modal Logic
-            function showModal(title, listData, filterType) {
-                modalTitle.textContent = title;
-                let html = '';
+                tableHTML += `
+                    <th>फ्लॅट आयडी</th>
+                    <th>खरेदीदार</th>
+                    <th class="text-right">खर्च रक्कम</th>
+                    <th>एजेंटचे नाव</th>
+                </tr></thead><tbody>`;
 
-                if (filterType === 'available') {
-                    html = `
-                        <li class="modal-header-row">
-                            <span style="flex-basis: 50%;">फ्लॅट आयडी</span>
-                            <span style="flex-basis: 50%; text-align: right;">किंमत</span>
-                        </li>
-                        ${listData.map(f => `<li><span style="flex-basis: 50%;">${f['फ्लॅट आयडी']}</span><span style="flex-basis: 50%; text-align: right;">${formatCurrency(f['एकूण किंमत'])}</span></li>`).join('')}`;
-                } else {
-                    const amountKey = filterType === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : 
-                                    filterType === 'registry' ? 'रजिस्ट्री खर्च' : 
-                                    filterType === 'bank-exp' ? 'बँक खर्च' : 'एकूण भरलेली रक्कम';
-                    
-                    html = `
-                        <li class="modal-header-row">
-                            <span class="col-flat">फ्लॅट आयडी</span>
-                            <span class="col-buyer">खरेदीदार</span>
-                            <span class="col-amount">${filterType.includes('positive') ? 'जमा/शिल्लक' : 'रक्कम'}</span>
-                        </li>
-                        ${listData.map(f => `
-                        <li>
-                            <span class="col-flat">${f['फ्लॅट आयडी']}</span>
-                            <span class="col-buyer">${f['खरेदीदाराचे नाव'] || '-'}</span>
-                            <span class="col-amount">${filterType.includes('positive') ? formatToLakhs(f['एकूण भरलेली रक्कम']) : formatCurrency(f[amountKey])}</span>
-                        </li>`).join('')}`;
-                }
+                tableHTML += filteredList.map(f => `
+                    <tr>
+                        <td><b>${f['फ्लॅट आयडी']}</b></td>
+                        <td>${f['खरेदीदाराचे नाव']}</td>
+                        <td class="text-right fw-bold text-primary">${formatCurrency(f[key])}</td>
+                        <td>${f['एजेंटचे नांव']}</td>
+                    </tr>
+                `).join('');
 
-                modalList.innerHTML = listData.length > 0 ? html : '<li>माहिती उपलब्ध नाही</li>';
-                modal.style.display = 'flex';
+            } else if (filterType === 'available') {
+                filteredList = dashboardData.filter(f => f['स्थिती'] !== 'विक्री झाली');
+                tableHTML += `<th>फ्लॅट आयडी</th><th class="text-right">अंदाजित किंमत</th></tr></thead><tbody>`;
+                tableHTML += filteredList.map(f => `
+                    <tr><td><b>${f['फ्लॅट आयडी']}</b></td><td class="text-right">${formatCurrency(f['एकूण किंमत'])}</td></tr>
+                `).join('');
+            } else {
+                // Default collected
+                filteredList = dashboardData.filter(f => f['एकूण भरलेली रक्कम'] > 0);
+                tableHTML += `<th>फ्लॅट आयडी</th><th>खरेदीदार</th><th class="text-right">जमा रक्कम</th></tr></thead><tbody>`;
+                tableHTML += filteredList.map(f => `
+                    <tr><td><b>${f['फ्लॅट आयडी']}</b></td><td>${f['खरेदीदाराचे नाव']}</td><td class="text-right text-green fw-bold">${formatCurrency(f['एकूण भरलेली रक्कम'])}</td></tr>
+                `).join('');
             }
 
-            // Events
-            kpiCards.forEach(card => card.addEventListener('click', () => {
-                const f = card.dataset.filter;
-                const t = card.dataset.title;
-                let filtered = [];
-
-                if (f === 'all') filtered = allFlatsData;
-                else if (f === 'sold') filtered = allFlatsData.filter(x => x['स्थिती'] === 'विक्री झाली');
-                else if (f === 'available') filtered = allFlatsData.filter(x => x['स्थिती'] !== 'विक्री झाली');
-                else if (f === 'collected-positive') filtered = allFlatsData.filter(x => x['एकूण भरलेली रक्कम'] > 0);
-                else if (f === 'pending-positive') filtered = allFlatsData.filter(x => x['शिल्लक रक्कम'] > 0 && x['स्थिती'] === 'विक्री झाली');
-                else if (['stamp-duty', 'registry', 'bank-exp'].includes(f)) {
-                    const key = f === 'stamp-duty' ? 'स्टॅम्प ड्युटी' : f === 'registry' ? 'रजिस्ट्री खर्च' : 'बँक खर्च';
-                    filtered = allFlatsData.filter(x => x[key] > 0);
-                }
-                showModal(t, filtered, f);
-            }));
-
-            modalCloseBtn.onclick = () => modal.style.display = 'none';
-            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+            tableHTML += `</tbody></table>`;
+            bodyContainer.innerHTML = filteredList.length > 0 ? tableHTML : '<p style="text-align:center; padding:20px;">कोणतीही माहिती उपलब्ध नाही.</p>';
             
-            tableSearchInput.oninput = () => renderTable(allFlatsData);
-            
-            tableHead.onclick = (e) => {
-                const th = e.target.closest('th');
-                if (!th) return;
-                const key = th.dataset.key;
-                currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
-                currentSort.key = key;
-                renderTable(allFlatsData);
+            document.getElementById('details-modal').style.display = 'flex';
+        }
+
+        // 6. Utility Functions
+        function formatCurrency(num) {
+            return '₹' + Number(num).toLocaleString('en-IN');
+        }
+
+        function formatLakh(num) {
+            const val = Number(num);
+            if (val >= 100000) {
+                return '₹' + (val / 100000).toFixed(2) + ' L';
+            }
+            return formatCurrency(val);
+        }
+
+        function toggleLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+
+        // 7. Event Handlers
+        function setupEventListeners() {
+            // KPI Card Clicks
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    showDetailsModal(card.dataset.filter, card.dataset.title);
+                });
+            });
+
+            // Modal Close
+            document.getElementById('modal-close-btn').onclick = () => {
+                document.getElementById('details-modal').style.display = 'none';
             };
 
-            fetchAndProcessData();
-        });
+            window.onclick = (event) => {
+                if (event.target.className === 'modal-overlay') {
+                    document.getElementById('details-modal').style.display = 'none';
+                }
+            };
+
+            // Search Functionality
+            document.getElementById('table-search').addEventListener('input', renderMainTable);
+
+            // Table Sorting
+            document.querySelectorAll('th[data-key]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.dataset.key;
+                    currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
+                    currentSort.key = key;
+                    renderMainTable();
+                });
+            });
+        }
     </script>
 </body>
 </html>
