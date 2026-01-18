@@ -207,12 +207,13 @@
                 
                 <div class="form-group">
                     <label for="stampDuty">स्टॅम्प ड्युटी (₹):</label>
-                    <input type="number" id="stampDuty" name="stampDuty" placeholder="स्वतः भरा" min="0" required>
+                    <!-- युजरने स्वतः भरलेली किंमतच येथे घेतली जाईल -->
+                    <input type="number" id="stampDuty" name="stampDuty" placeholder="स्वतः रक्कम टाका" min="0" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="registryExp">रजिस्ट्री चार्जेस (₹):</label>
-                    <input type="number" class="expense-input" id="registryExp" name="registryExp" value="200000" min="0">
+                    <input type="number" class="expense-input" id="registryExp" name="registryExp" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
@@ -267,11 +268,10 @@
                     <input type="number" id="paymentAmount" name="paymentAmount" placeholder="रक्कम टाका" min="1" required>
                 </div>
                 
-                <!-- पेमेंट मोड (Cash/Online) -->
                 <div class="form-group">
                     <label>पेमेंटचा प्रकार (Payment Mode):</label>
                     <div class="payment-mode-container">
-                        <label><input type="radio" name="paymentMode" value="Online" checked> ऑनलाईन (Online)</label>
+                        <label><input type="radio" name="paymentMode" value="Online" checked> ऑनलाईन</label>
                         <label><input type="radio" name="paymentMode" value="Cash"> रोख (Cash)</label>
                         <label><input type="radio" name="paymentMode" value="Cheque"> चेक (Cheque)</label>
                     </div>
@@ -298,7 +298,6 @@
         // ▼▼▼ तुमची Google Apps Script URL इथे टाका ▼▼▼
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzryb0o_HPvyyOO6LRa8jjnXJayLdu6Xz5kblfG0tQ3oHKCJVERGFzvcmVychRAhVk/exec'; 
 
-        // --- Elements ---
         const availableFlatsSelect = document.getElementById('availableFlats');
         const soldFlatsSelect = document.getElementById('soldFlats');
         const newSaleForm = document.getElementById('newSaleForm');
@@ -315,10 +314,10 @@
         
         const formatCurrency = (num) => `₹${Number(num).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-        // एकूण किंमत मोजणे (आता स्टॅम्प ड्युटी मॅन्युअली मोजली जाईल)
+        // *महत्वाचे*: स्टॅम्प ड्युटी मॅन्युअली इनपुट मधून घेऊन एकूण बेरीज करणे
         function calculateTotal() {
             const finalRate = parseFloat(finalRateInput.value) || 0;
-            const stampDuty = parseFloat(stampDutyInput.value) || 0;
+            const stampDuty = parseFloat(stampDutyInput.value) || 0; // फक्त मॅन्युअल व्हॅल्यू घेणार
             
             let otherExpenses = 0;
             expenseInputs.forEach(input => {
@@ -330,21 +329,16 @@
             document.getElementById('totalPrice').value = total;
         }
         
-        // डेटा लोड करणे
         async function fetchInitialData() {
             try {
                 const response = await fetch(WEB_APP_URL);
                 const data = await response.json();
                 if (data.status === 'success') {
                     availableFlatsData = data.availableFlats;
-                    
-                    // उपलब्ध फ्लॅट्स ड्रॉपडाउन
                     availableFlatsSelect.innerHTML = '<option value="">-- निवडा --</option>';
                     data.availableFlats.forEach(flat => {
                         availableFlatsSelect.add(new Option(`${flat.flatId} - (${formatCurrency(flat.price)})`, flat.flatId));
                     });
-                    
-                    // विक्री झालेले फ्लॅट्स ड्रॉपडाउन
                     soldFlatsSelect.innerHTML = '<option value="">-- निवडा --</option>';
                     data.soldFlats.forEach(flat => {
                         soldFlatsSelect.add(new Option(flat, flat));
@@ -352,11 +346,10 @@
                 }
             } catch (error) {
                 console.error("Error:", error);
-                alert("डेटा लोड करताना त्रुटी आली. कृपया इंटरनेट तपासा.");
+                alert("डेटा लोड करताना त्रुटी आली.");
             }
         }
         
-        // इमेज प्रोसेसिंग
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -366,7 +359,6 @@
             });
         }
 
-        // फॉर्म सबमिट करणे
         async function handleFormSubmit(event, form, submitBtn, messageDiv) {
             event.preventDefault();
             submitBtn.disabled = true;
@@ -377,16 +369,13 @@
             const formData = new FormData(form);
             let payload = Object.fromEntries(formData.entries());
 
-            // फाइल असेल तर ॲड करा
             if (form.id === 'installmentForm' && screenshotFileInput.files.length > 0) {
                 const file = screenshotFileInput.files[0];
                 try {
                     payload.fileData = await getBase64(file);
                     payload.mimeType = file.type;
                     payload.fileName = file.name;
-                } catch(e) {
-                    alert("फाइल वाचता आली नाही.");
-                }
+                } catch(e) { console.error(e); }
             }
 
             try {
@@ -400,12 +389,12 @@
                     messageDiv.textContent = "✅ " + resultText;
                     messageDiv.className = 'message success';
                     form.reset();
+                    // रिसेट नंतर काही डीफॉल्ट व्हॅल्यूज
                     if(form.id === 'newSaleForm') {
-                        document.getElementById('registryExp').value = "200000";
                         calculateTotal();
                     }
                     fileNameDisplay.textContent = "";
-                    fetchInitialData(); // ड्रॉपडाउन रिफ्रेश करा
+                    fetchInitialData();
                 } else {
                     throw new Error(resultText);
                 }
@@ -420,12 +409,10 @@
             }
         }
 
-        // सुरुवातीचे सेटिंग्ज
         function init() {
             document.getElementById('saleDate').valueAsDate = new Date();
             document.getElementById('paymentDate').valueAsDate = new Date();
             
-            // फ्लॅट निवडल्यावर किंमत आपोआप येणे
             availableFlatsSelect.addEventListener('change', () => {
                 const flat = availableFlatsData.find(f => f.flatId === availableFlatsSelect.value);
                 if (flat) {
@@ -435,17 +422,15 @@
                 }
             });
 
-            // कॅल्क्युलेशन इव्हेंट्स
+            // सर्व इनपुटला इव्हेंट लावले जेणेकरून टाइप करताना लगेच टोटल बदलेल
             finalRateInput.addEventListener('input', calculateTotal);
             stampDutyInput.addEventListener('input', calculateTotal);
             expenseInputs.forEach(input => input.addEventListener('input', calculateTotal));
             
-            // फाइल निवडल्यावर नाव दाखवणे
             screenshotFileInput.addEventListener('change', () => {
                 fileNameDisplay.textContent = screenshotFileInput.files[0] ? `निवडलेली फाइल: ${screenshotFileInput.files[0].name}` : "";
             });
 
-            // फॉर्म सबमिशन
             newSaleForm.addEventListener('submit', (e) => handleFormSubmit(e, newSaleForm, document.getElementById('saleSubmitBtn'), document.getElementById('saleMessage')));
             installmentForm.addEventListener('submit', (e) => handleFormSubmit(e, installmentForm, document.getElementById('installmentSubmitBtn'), document.getElementById('installmentMessage')));
             
